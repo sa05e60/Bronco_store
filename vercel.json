@@ -3,7 +3,7 @@
   "name": "bronco-frontend",
   "public": true,
   "cleanUrls": true,
-  "trailingSlash": false,
+  "trailingSlash": true,
   "routes": [
     {
       "src": "^/api/(.*)$",
