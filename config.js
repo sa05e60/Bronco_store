@@ -5,4 +5,4 @@
  * For local development:  '' (empty = same origin)
  * For production (Render): 'https://your-bronco-api.onrender.com'
  */
-window.BRONCO_API_URL = '';
+window.BRONCO_API_URL = 'https://bronco-api-xyz.onrender.com';
