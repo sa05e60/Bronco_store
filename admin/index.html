@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BRONCO Admin Panel</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Rye&family=Roboto+Slab:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=20260325_1250">
+<script>
+window.onerror = function(msg, url, line, col, error) {
+  document.body.innerHTML = '<div style="color:red; background:white; padding:20px; z-index:9999; position:fixed; top:0; left:0; width:100%; font-size:20px;"><b>JS CRASH:</b> ' + msg + ' at line ' + line + '</div>' + document.body.innerHTML;
+  return false;
+};
+</script>
+</head>
+<div class="admin-layout">
+  <aside class="sidebar" id="sidebar" style="display:none">
+    <div class="brand">
+      <div class="logo">B</div>
+      <div>
+        <div style="font-family:'Rye';font-size:17px">BRONCO</div>
+        <div style="font-size:11px;opacity:.9">Admin Panel</div>
+      </div>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <button class="tab-btn active" data-tab="products-tab">📦 Products</button>
+      <button class="tab-btn" data-tab="coupons-tab">🎫 Coupons</button>
+      <hr>
+      <button class="tab-btn" data-tab="new-orders-tab">🛒 New Orders</button>
+      <button class="tab-btn" data-tab="shipped-orders-tab">🚚 Shipped</button>
+      <button class="tab-btn" data-tab="delivered-orders-tab">✅ Delivered</button>
+      <button class="tab-btn" data-tab="returned-orders-tab">❌ Returned</button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div id="admin-email">Not signed in</div>
+      <button id="logout-btn" class="icon-btn logout-link">Logout</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="container">
+
+  <!-- LOGIN VIEW -->
+  <section id="login-view" class="card" style="max-width:400px; margin:0 auto;">
+    <h2>Admin Login</h2>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="login-email" placeholder="Email...">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="Password...">
+    </div>
+    <button id="login-btn" class="btn">Login</button>
+    <div id="login-msg" class="muted" style="margin-top:6px"></div>
+  </section>
+
+  <!-- ADMIN VIEW -->
+  <section id="admin-view" style="display:none">
+
+      <!-- Dashboard summary can go here if needed -->
+
+    <!-- PRODUCTS TAB -->
+    <section id="products-tab" class="card">
+      <h3>Products</h3>
+      <div class="grid-2">
+        <!-- form -->
+        <div>
+          <h4>Add / Edit</h4>
+          <div class="field">
+            <label>Product ID</label>
+            <input type="text" id="prod-id" placeholder="ID (Auto-generated if empty)">
+          </div>
+          <div class="field">
+            <label>Title</label>
+            <input type="text" id="prod-title" placeholder="Title">
+          </div>
+          <div class="field">
+            <label>Price ($)</label>
+            <input type="number" id="prod-price" step="0.01" placeholder="0.00">
+          </div>
+          <div class="field">
+            <label>Stock</label>
+            <input type="number" id="prod-stock" step="1" placeholder="10">
+          </div>
+          <div class="field">
+            <label>Image URL</label>
+            <input type="url" id="prod-img" placeholder="http...">
+          </div>
+          <div class="field">
+            <label>Category</label>
+            <select id="prod-cat">
+              <option value="boots">Boots</option>
+              <option value="hats">Hats</option>
+              <option value="shirts">Shirts</option>
+              <option value="jeans">Jeans</option>
+              <option value="jackets">Jackets</option>
+              <option value="belts">Belts</option>
+              <option value="accessories">Accessories</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <textarea id="prod-desc" placeholder="Desc..."></textarea>
+          </div>
+          <div class="field">
+            <label>Sizes</label>
+            <input type="text" id="prod-sizes" placeholder="S,M,L">
+          </div>
+          <div class="field">
+            <label>Specs</label>
+            <input type="text" id="prod-specs" placeholder="Color=Red; Material=Cotton">
+          </div>
+
+          <button id="prod-save" class="btn" style="margin-top:8px">Save Product</button>
+          <button id="prod-clear" class="icon-btn" style="margin-top:8px">Clear Form</button>
+          <div id="prod-msg" class="muted" style="margin-top:6px"></div>
+        </div>
+
+        <!-- list -->
+        <div>
+          <h4>List</h4>
+          <div id="products-list" class="muted">Loading...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COUPONS TAB -->
+    <section id="coupons-tab" class="card" style="display:none">
+      <h3>Coupons</h3>
+      <div class="grid-2">
+        <div>
+          <h4>Add / Edit</h4>
+          <div class="field">
+            <label>Code</label>
+            <input type="text" id="cp-code" placeholder="Code">
+          </div>
+          <div class="field">
+            <label>Type</label>
+            <select id="cp-type">
+              <option value="percent">Percent %</option>
+              <option value="shipping">Free Shipping</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Value</label>
+            <input type="number" id="cp-value" step="1" placeholder="10">
+          </div>
+          <div class="field">
+            <label>Min Subtotal ($)</label>
+            <input type="number" id="cp-min" step="0.01" placeholder="0.00">
+          </div>
+          <div class="field">
+            <label>Label</label>
+            <input type="text" id="cp-label" placeholder="Description">
+          </div>
+
+          <button id="cp-save" class="btn" style="margin-top:8px">Save Coupon</button>
+          <button id="cp-clear" class="icon-btn" style="margin-top:8px">Clear Form</button>
+          <div id="cp-msg" class="muted" style="margin-top:6px"></div>
+        </div>
+
+        <div>
+          <h4>List</h4>
+          <div id="coupons-list" class="muted">Loading...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEW ORDERS TAB -->
+    <section id="new-orders-tab" class="card" style="display:none">
+      <h3>📦 New & Pending Orders</h3>
+      <div id="new-orders-list" class="muted">Loading...</div>
+    </section>
+
+    <!-- SHIPPED ORDERS TAB -->
+    <section id="shipped-orders-tab" class="card" style="display:none">
+      <h3>🚚 Shipped Orders</h3>
+      <div id="shipped-orders-list" class="muted">Loading...</div>
+    </section>
+
+    <!-- DELIVERED ORDERS TAB -->
+    <section id="delivered-orders-tab" class="card" style="display:none">
+      <h3>✅ Delivered & Completed</h3>
+      <div id="delivered-orders-list" class="muted">Loading...</div>
+    </section>
+
+    <!-- RETURNED ORDERS TAB -->
+    <section id="returned-orders-tab" class="card" style="display:none">
+      <h3>❌ Cancelled & Returned</h3>
+      <div id="returned-orders-list" class="muted">Loading...</div>
+    </section>
+
+  </section>
+    </div>
+  </main>
+</div>
+
+<script src="../config.js?v=1"></script>
+<script src="js/admin.js?v=20260325_1250"></script>
+
+</body>
+</html>

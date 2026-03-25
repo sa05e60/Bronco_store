@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BRONCO — Western Wear Co.</title>
+
+  <!-- SEO -->
+  <meta name="description" content="BRONCO — Western & cowboy apparel. Hats, boots, denim, and more." />
+  <meta property="og:title" content="BRONCO — Western Wear Co." />
+  <meta property="og:description" content="Ride the Style. Live the West." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#5C3A21" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Rye&family=Caveat:wght@700&family=Roboto+Slab:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css?v=20260325_1250">
+
+  <!-- ====== API config ====== -->
+  <script src="../config.js?v=1"></script>
+  <!-- ====== SFX via YouTube (GLOBAL) ====== -->
+  <script defer src="js/script.js?v=10014"></script>
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="nav">
+    <div class="brand">
+      <div class="logo">B</div>
+      <div><div style="font-family:'Rye';font-size:18px">BRONCO</div><div style="font-size:12px;opacity:.9">Western Wear Co.</div></div>
+    </div>
+    <nav class="nav-links" aria-label="Main"><a href="#shop">Shop</a></nav>
+    <div class="nav-actions">
+      <!-- Profile Avatar (محجوب افتراضياً ويظهر عند تسجيل الدخول) -->
+      <div id="user-info" style="display:none; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, #e4b363, #b8834d); color:#fff; font-weight:800; font-size:18px; cursor:pointer; font-family:'Rye', serif; box-shadow:0 2px 5px rgba(0,0,0,0.3); transition:transform 0.2s, filter 0.2s;" onmouseover="this.style.transform='scale(1.1)'; this.style.filter='brightness(1.1)';" onmouseout="this.style.transform='scale(1)'; this.style.filter='brightness(1)';" title="Profile">
+        U
+      </div>
+
+      <!-- تم حذف خط الشرف / الهونر بار من هنا -->
+
+      <button id="auth-btn" class="icon-btn" aria-haspopup="dialog" aria-controls="auth-modal" style="display:flex; align-items:center; gap:6px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-icon">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#E8B651" stroke="#3E2615" stroke-width="1.5" stroke-linejoin="round"></polygon>
+          <circle cx="12" cy="12" r="3.5" fill="#3E2615" opacity="0.15"></circle>
+          <circle cx="12" cy="12" r="3.5" stroke="#3E2615" stroke-width="1" stroke-dasharray="2 2"></circle>
+        </svg>
+        Login
+      </button>
+
+      <button id="coupons-open" class="icon-btn" aria-expanded="false" aria-controls="coupons-drawer" style="border-color:#b8834d; padding:8px 14px; font-weight:800; display:flex; align-items:center; gap:6px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-icon">
+          <path d="M3 7v2a3 3 0 1 1 0 6v2c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-2a3 3 0 1 1 0-6V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2Z" fill="#B24C3E" stroke="#E8B651" stroke-width="1.5" stroke-linejoin="round"></path>
+          <line x1="8" y1="5" x2="8" y2="19" stroke="#E8B651" stroke-width="1.5" stroke-dasharray="3 3"></line>
+          <circle cx="15" cy="12" r="2" fill="#E8B651"></circle>
+        </svg>
+        Offers
+      </button>
+
+      <button id="cart-open" class="cart-btn" aria-expanded="false" aria-controls="cart-drawer" style="display:flex; align-items:center; gap:6px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-icon">
+          <path d="M4 11C4 9.89543 4.89543 9 6 9H18C19.1046 9 20 9.89543 20 11V18C20 19.6569 18.6569 21 17 21H7C5.34315 21 4 19.6569 4 18V11Z" fill="#C29B77" stroke="#3E2615" stroke-width="1.5"></path>
+          <path d="M4 11V13.5C4 13.5 12 17 20 13.5V11C20 9.89543 19.1046 9 18 9H6C4.89543 9 4 9.89543 4 11Z" fill="#8B5A2B" stroke="#3E2615" stroke-width="1.5"></path>
+          <path d="M9 9V6C9 4.89543 9.89543 4 11 4H13C14.1046 4 15 4.89543 15 6V9" stroke="#3E2615" stroke-width="2" stroke-linecap="round"></path>
+          <rect x="11" y="11.5" width="2" height="3" rx="1" fill="#E8B651"></rect>
+        </svg>
+        Cart 
+        <span id="cart-count" style="background:#fff;color:var(--brown);padding:2px 8px;border-radius:10px;font-weight:800;font-size:12px;">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- HONOR WIDGET -->
+  <div id="honor-widget" class="honor-widget" style="position:fixed; bottom:20px; left:20px; background:rgba(62,38,21,0.95); backdrop-filter:blur(4px); color:#fff; padding:12px 14px 2px 14px; border-radius:10px; font-size:12px; display:flex; flex-direction:column; gap:6px; box-shadow:0 6px 16px rgba(0,0,0,0.3); z-index:9999; width:240px; border:1px solid #C29B77; overflow:hidden; pointer-events:none; opacity:0; transition:opacity 0.4s ease, transform 0.4s ease; transform:translateY(20px);">
+    <div style="font-weight:700; font-family:'Rye',sans-serif; font-size:14px; color:#e4b363; display:flex; justify-content:space-between; align-items:center;">
+      <span>Rise of Honor</span>
+      <span id="honor-percent" style="font-size:11px; color:#fff; font-family:'Poppins',sans-serif;">0%</span>
+    </div>
+    <div id="honor-hint" style="line-height:1.3; opacity:0.85;">Add 10 items to your cart to unlock 20% OFF!</div>
+    <div style="width:100%; background:rgba(255,255,255,0.15); height:6px; border-radius:4px; overflow:hidden; margin-top:2px; box-shadow:inset 0 1px 2px rgba(0,0,0,0.3);">
+      <div id="honor-fill" style="width:0%; height:100%; background:linear-gradient(90deg, #b8834d, #e4b363); transition:width 0.4s ease;"></div>
+    </div>
+    <img id="honor-img" src="https://i.pinimg.com/1200x/04/f4/0c/04f40cbb6048f7cffd0e7ac841a9db64.jpg" alt="Honor" style="display:block; width:100%; height:auto; border-radius:6px; margin-top:6px; margin-bottom:0px; box-shadow:0 2px 8px rgba(0,0,0,0.3);" />
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" role="banner">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1>BRONCO</h1>
+        <p>Ride the Style. Live the West. — Authentic western & cowboy apparel.</p>
+        <div class="hero-cta">
+          <button class="btn" onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'})">Shop Now</button>
+    <a href="#about" class="btn alt">Learn More</a>
+        </div>
+      </div>
+      <div style="flex:1"></div>
+    </div>
+
+    <!-- Glass badge with SVG Social -->
+    <div class="hero-badge" aria-hidden="false">
+      <div class="brand-line"><span class="brand-chip">B</span>BRONCO</div>
+      <div class="sub">WESTERN WEAR CO.</div>
+      <div class="social" aria-label="Social links">
+        <!-- روابط السوشال نفس ما هي -->
+        <a href="https://instagram.com/bronco.wear" target="_blank" rel="noopener" aria-label="Instagram"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1"></circle></svg></span>Instagram · @bronco.wear</a>
+        <a href="https://tiktok.com/@bronco.wear" target="_blank" rel="noopener" aria-label="TikTok"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v8.5a3.5 3.5 0 1 1-3-3.45"></path><path d="M14 6c1.2 1.7 3.1 2.9 5 3"></path></svg></span>TikTok · @bronco.wear</a>
+        <a href="https://facebook.com/BroncoWear" target="_blank" rel="noopener" aria-label="Facebook"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 8h2.5V5.5H14a3 3 0 0 0-3 3V12H8v2.5h3V21h2.5v-6.5H17V12h-3V8z"></path></svg></span>Facebook · /BroncoWear</a>
+        <a href="https://x.com/bronco_wear" target="_blank" rel="noopener" aria-label="X"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 16M20 4L4 20"></path></svg></span>X · @bronco_wear</a>
+        <a href="https://youtube.com/@bronco_wear" target="_blank" rel="noopener" aria-label="YouTube"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6.5" width="18" height="11" rx="3"></rect><path d="M11 10l4 2-4 2v-4z" fill="currentColor" stroke="none"></path></svg></span>YouTube · @bronco_wear</a>
+        <a href="https://t.me/bronco_wear" target="_blank" rel="noopener" aria-label="Telegram"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5L11 13l-2 6 3-4 5 2 4-12z"></path></svg></span>Telegram · t.me/bronco_wear</a>
+        <a href="https://wa.me/9647XXXXXXXXX" target="_blank" rel="noopener" aria-label="WhatsApp"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 14.5c-1 .8-2 .9-3.1 .4-1.2-.5-2.5-1.9-3-3-.5-1.1-.4-2.1 .4-3.1l-1.1-1.1a6.5 6.5 0 1 0 7.9 7.9l-1.1-1.1z"></path><path d="M8 18l-2.5 .7 .7-2.5"></path></svg></span>WhatsApp · +964 7xx xxx xxxx</a>
+        <a href="https://www.threads.net/@bronco.wear" target="_blank" rel="noopener" aria-label="Threads"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c5.5 0 9 3.7 9 9s-3.5 9-9 9-9-3.7-9-9 3.5-9 9-9z"></path><path d="M8 12c0-2 2-3 4-3 3 0 4 2 4 4s-1 4-4 4c-1.8 0-3-.8-3-2 0-1.2 1.1-1.8 2.4-1.8H13"></path></svg></span>Threads · @bronco.wear</a>
+        <a href="https://www.pinterest.com/bronco_wear" target="_blank" rel="noopener" aria-label="Pinterest"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M10 18l1.5-5.5"></path><path d="M9 11c.5-2 3-3 5-2 2 .8 2.5 3.8 .5 5-1 .8-2.2 .8-3 .5"></path></svg></span>Pinterest · /bronco_wear</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT SECTION -->
+  <section id="about" style="padding: 80px 20px; background: url('https://i.pinimg.com/1200x/c1/80/7e/c1807ed6b7b2046db4a52932eab2171c.jpg') center/cover fixed; margin: 60px auto 40px; max-width: 1100px; width: 92%; border-radius: 20px; box-shadow: 0 16px 40px rgba(62,38,21,0.4); position: relative; overflow: hidden; border: 2px solid #b8834d;">
+    <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(62,38,21,0.95), rgba(92,58,33,0.8));"></div>
+    <div style="position: relative; z-index: 1; text-align: center; color: #fff; max-width: 650px; margin: 0 auto;">
+      <div style="font-size: 42px; margin-bottom: 12px; opacity: 0.9;">🌾</div>
+      <h2 style="font-family: 'Rye', serif; font-size: 34px; color: #E8B651; margin-bottom: 20px; letter-spacing: 2px; text-transform: uppercase;">The BRONCO Story</h2>
+      <p style="font-family: 'Poppins', sans-serif; font-size: 16px; line-height: 1.8; color: #e7dfd7; font-weight: 300;">
+        We don't just sell leather and denim; we forge a classic legacy. <b>BRONCO</b> products are crafted for those with refined taste—built to withstand the harshest elements while preserving the luxurious, authentic Western spirit. Ride the style, live the West.
+      </p>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <main class="container">
+    <h2 id="shop" style="margin:0 0 12px;font-family:'Roboto Slab'">Featured Products</h2>
+
+    <div class="filters" id="cat-filters" role="tablist" aria-label="Product categories"></div>
+
+    <div class="toolbar" aria-label="Search and sort">
+      <div class="search">🔎<input id="search-input" type="search" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="hidden_search" data-lpignore="true" placeholder="Search products... (e.g., jeans, boots)" aria-label="Search products" /></div>
+      <select id="sort-select" class="select" aria-label="Sort products">
+        <option value="featured">Sort: Featured</option>
+        <option value="relevance">Sort: Relevance</option>
+        <option value="price_asc">Price: Low → High</option>
+        <option value="price_desc">Price: High → Low</option>
+        <option value="name_asc">Name: A → Z</option>
+      </select>
+    </div>
+
+    <div class="grid" id="products-grid"></div>
+  </main>
+
+  <!-- COUPONS DRAWER -->
+  <div class="modal" aria-live="polite">
+    <div class="drawer" id="coupons-drawer" aria-hidden="true" role="dialog" aria-label="Coupons">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <strong>🎟️ Offers & Coupons</strong>
+        <button id="close-coupons" class="icon-btn" aria-label="Close coupons">Close</button>
+      </div>
+      <p class="muted" style="margin-bottom:16px;font-size:14px">Click on any coupon below to activate it and apply the discount automatically at checkout.</p>
+      <div id="drawer-coupons-list" class="coupon-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+  </div>
+
+  <!-- CART -->
+  <div class="modal" aria-live="polite">
+    <div class="drawer" id="cart-drawer" aria-hidden="true" role="dialog" aria-label="Shopping Cart">
+      <div style="display:flex;justify-content:space-between;align-items:center"><strong>Shopping Cart</strong><button id="close-cart" class="icon-btn" aria-label="Close cart">Close</button></div>
+      <div id="cart-items" style="display:flex;flex-direction:column;gap:10px;max-height:420px;overflow:auto;padding-top:6px"></div>
+      <div class="cart-summary">
+        <div><div class="muted">Total</div><div id="cart-total" style="font-weight:800;font-size:18px">$0.00</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><button id="checkout-btn" class="btn">Checkout</button><button id="clear-cart" class="icon-btn" style="color:#b33;border-color:#f2d4cf">Clear</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH MODAL -->
+  <div class="auth-modal" id="auth-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="auth-title" tabindex="-1">
+    <div class="auth-card" role="document">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="auth-title"><strong id="auth-title">Login</strong></div>
+        <button id="close-auth" class="close-x" aria-label="Close auth">✕</button>
+      </div>
+      <div id="auth-forms">
+        <form id="login-form">
+          <div class="field"><label>Email</label><input type="email" id="login-email" autocomplete="username" /></div>
+          <div class="field"><label>Password</label><input type="password" id="login-pass" autocomplete="current-password" /></div>
+          <div style="text-align:right; margin-top:-8px; margin-bottom:12px;">
+            <a href="#" id="show-forgot" style="font-size:12px; color:#b8834d; text-decoration:none;">Forgot Password?</a>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end"><button id="show-register" class="icon-btn" type="button" style="border-color:#b8834d;color:#6e4a2d">Create account</button><button id="do-login" class="btn" type="button">Login</button></div>
+        </form>
+        <form id="forgot-form" style="display:none">
+          <p class="muted" style="font-size:13px; margin-bottom:12px; line-height:1.4;">Enter your email addrress and we'll send you a secure link to reset your password.</p>
+          <div class="field"><label>Email</label><input type="email" id="forgot-email" autocomplete="email" /></div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button id="back-to-login" class="icon-btn" type="button">Back</button>
+            <button id="do-forgot" class="btn" type="button">Send Link</button>
+          </div>
+        </form>
+        <form id="register-form" style="display:none">
+          <div class="field"><label>Name</label><input type="text" id="reg-name" autocomplete="name" /></div>
+          <div class="field"><label>Email</label><input type="email" id="reg-email" autocomplete="email" /></div>
+          <div class="field">
+            <label>Phone Number</label>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <select id="reg-country" style="padding:9px 6px; border-radius:8px; border:1.5px solid #e7dfd7; font-family:'Poppins',sans-serif; font-size:13px; background:#fff; color:#3e2615; cursor:pointer; min-width:120px;">
+                <option value="+964">🇮🇶 +964 Iraq</option>
+                <option value="+966">🇸🇦 +966 Saudi Arabia</option>
+                <option value="+971">🇦🇪 +971 UAE</option>
+                <option value="+965">🇰🇼 +965 Kuwait</option>
+                <option value="+974">🇶🇦 +974 Qatar</option>
+                <option value="+973">🇧🇭 +973 Bahrain</option>
+                <option value="+968">🇴🇲 +968 Oman</option>
+                <option value="+962">🇯🇴 +962 Jordan</option>
+                <option value="+963">🇸🇾 +963 Syria</option>
+                <option value="+961">🇱🇧 +961 Lebanon</option>
+                <option value="+20">🇪🇬 +20 Egypt</option>
+                <option value="+212">🇲🇦 +212 Morocco</option>
+                <option value="+216">🇹🇳 +216 Tunisia</option>
+                <option value="+90">🇹🇷 +90 Turkey</option>
+                <option value="+44">🇬🇧 +44 UK</option>
+                <option value="+1">🇺🇸 +1 USA</option>
+                <option value="+49">🇩🇪 +49 Germany</option>
+                <option value="+33">🇫🇷 +33 France</option>
+              </select>
+              <input type="tel" id="reg-phone" placeholder="07XX XXX XXXX" autocomplete="tel" style="flex:1;" />
+            </div>
+          </div>
+          <div class="field"><label>Password</label><input type="password" id="reg-pass" autocomplete="new-password" /></div>
+          <div style="display:flex;gap:8px;justify-content:flex-end"><button id="show-login" class="icon-btn" type="button" style="border-color:#b8834d;color:#6e4a2d">Back to login</button><button id="do-register" class="btn" type="button">Create</button></div>
+        </form>
+      </div>
+      <div class="muted" style="margin-top:10px">By creating an account you agree to BRONCO terms.</div>
+  </div>
+  </div>
+
+  <!-- WANTED PROFILE MODAL -->
+  <div id="profile-modal" class="details-backdrop" aria-hidden="true" role="dialog" tabindex="-1">
+    <div class="wanted-poster-container" role="document">
+      <button id="close-profile" aria-label="Close profile" style="position:absolute; top:-15px; right:-15px; z-index:10; background:#e3d1b8; border:2px solid #5c3a21; width:36px; height:36px; font-weight:bold; color:#5c3a21; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-family:sans-serif; box-shadow:0 4px 10px rgba(0,0,0,0.5);">✕</button>
+      <div class="wanted-poster">
+        <div class="wanted-header">WANTED</div>
+        <div class="wanted-sub">DEAD OR ALIVE</div>
+
+        <!-- صورة البروفايل -->
+        <div class="profile-pic-wrapper" style="position:relative; width:fit-content; margin:0 auto;">
+          <div class="wanted-image-frame" id="profile-pic-container" style="overflow:hidden; position:relative;">
+            <svg viewBox="0 0 100 100" fill="#3e2615" opacity="0.85" width="120" height="120">
+              <path d="M50 15 C30 15, 20 30, 10 32 C10 35, 15 38, 25 38 C28 42, 35 45, 40 45 C40 55, 45 60, 50 60 C55 60, 60 55, 60 45 C65 45, 72 42, 75 38 C85 38, 90 35, 90 32 C80 30, 70 15, 50 15 Z" />
+              <path d="M40 45 C35 55, 20 70, 0 90 L100 90 C80 70, 65 55, 60 45 Z" />
+            </svg>
+          </div>
+          <label for="pic-upload" style="position:absolute; bottom:-10px; right:-15px; background:#e8b651; color:#3e2615; border:2px solid #3e2615; border-radius:15px; padding:4px 8px; font-family:'Poppins', sans-serif; font-size:12px; font-weight:700; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,0.3); transition:transform 0.2s;">📷 Edit</label>
+          <input type="file" id="pic-upload" accept="image/*" style="display:none">
+        </div>
+
+        <!-- الاسم مع تعديل inline -->
+        <div style="margin-top:8px; margin-bottom:4px; display:flex; align-items:center; justify-content:center; gap:6px;">
+          <div id="profile-name" class="wanted-name" style="font-family:'Caveat', cursive; font-size:44px; transform:rotate(-3deg); color:#2b1a0e;">UNKNOWN</div>
+          <button id="edit-name-btn" title="Edit name" style="background:none; border:none; cursor:pointer; font-size:16px; color:#b8834d; padding:2px 4px; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">✏️</button>
+        </div>
+        <!-- حقل تعديل الاسم (مخفي) -->
+        <div id="edit-name-wrap" style="display:none; justify-content:center; gap:6px; margin-bottom:6px;">
+          <input id="edit-name-input" type="text" placeholder="New name…" style="padding:6px 10px; border-radius:8px; border:1.5px solid #b8834d; font-family:'Poppins',sans-serif; font-size:14px; width:160px;" />
+          <button id="save-name-btn" class="btn" style="padding:6px 12px; font-size:13px;">Save</button>
+          <button id="cancel-name-btn" class="icon-btn" style="padding:6px 10px; font-size:13px;">Cancel</button>
+        </div>
+
+        <!-- الإيميل والهاتف -->
+        <div id="profile-contact" style="text-align:center; font-family:'Poppins',sans-serif; font-size:12px; color:#5c3a21; margin-bottom:6px; display:flex; flex-direction:column; gap:2px;"></div>
+        
+        <!-- حقل تعديل الهاتف -->
+        <div id="edit-phone-wrap" style="display:none; justify-content:center; gap:6px; margin-bottom:10px;">
+          <input id="edit-phone-input" type="tel" placeholder="New phone…" style="padding:4px 8px; border-radius:6px; border:1px solid #b8834d; font-family:'Poppins',sans-serif; font-size:12px; width:120px;" />
+          <button id="save-phone-btn" class="btn" style="padding:4px 8px; font-size:11px;">Save</button>
+          <button id="cancel-phone-btn" class="icon-btn" style="padding:4px 6px; font-size:11px;">Cancel</button>
+        </div>
+
+        <!-- شريط الشرف -->
+        <div style="margin:8px auto 14px; width:85%; max-width:200px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px; font-family:'Poppins',sans-serif; font-weight:600; color:#5c3a21; margin-bottom:4px;">
+            <span>Honor Level</span>
+            <span id="profile-honor-text" style="color:#e4b363;">0%</span>
+          </div>
+          <div style="width:100%; height:8px; background:rgba(0,0,0,0.1); border-radius:4px; overflow:hidden; box-shadow:inset 0 1px 2px rgba(0,0,0,0.2);">
+            <div id="profile-honor-fill" style="width:0%; height:100%; background:linear-gradient(90deg, #b8834d, #e4b363); transition:width 0.4s ease;"></div>
+          </div>
+        </div>
+
+        <!-- الـ Bounty -->
+        <div class="wanted-bounty">
+          <span style="font-size:14px; font-family:'Poppins', sans-serif; letter-spacing:1px; color:#5c3a21;">REWARD</span><br>
+          <span id="profile-bounty" style="color:#9e2a2b;">$0</span>
+        </div>
+
+        <!-- سجل الطلبات -->
+        <div style="margin-top:16px; border-top:2px dashed #3e2615; padding-top:12px;">
+          <h4 style="font-family:'Rye'; text-align:center; font-size:15px; margin-bottom:8px; color:#3e2615;">📦 Order History</h4>
+          <div id="profile-orders" style="max-height:150px; overflow-y:auto; display:flex; flex-direction:column; gap:6px; font-family:'Poppins',sans-serif; font-size:12px;">
+            <div class="muted" style="text-align:center;">Loading orders…</div>
+          </div>
+        </div>
+
+        <!-- الإعدادات -->
+        <div class="profile-settings" style="margin-top:16px; border-top:2px dashed #3e2615; padding-top:12px; text-align:left; display:flex; flex-direction:column; gap:8px;">
+          <h4 style="font-family:'Rye'; margin-bottom:5px; text-align:center; font-size:18px;">Settings</h4>
+          <button id="lookout-btn" class="icon-btn" style="width:100%; text-align:left; font-size:14px; padding:8px 12px; border:1px solid #5c3a21; border-radius:4px; font-family:'Poppins', sans-serif; font-weight:600; color:#3e2615; display:flex; align-items:center; justify-content:flex-start; gap:8px;">📍 Lookout — Saved Address</button>
+          <button id="change-pass-btn" class="icon-btn" style="width:100%; text-align:left; font-size:14px; padding:8px 12px; border:1px solid #5c3a21; border-radius:4px; font-family:'Poppins', sans-serif; font-weight:600; color:#3e2615; display:flex; align-items:center; justify-content:flex-start; gap:8px;">🔑 Change Password</button>
+          <button id="profile-logout" class="icon-btn" style="width:100%; text-align:left; font-size:14px; padding:8px 12px; border:1px solid #9e2a2b; border-radius:4px; font-family:'Poppins', sans-serif; font-weight:600; color:#9e2a2b; display:flex; align-items:center; justify-content:flex-start; gap:8px;">🚪 Logout/Switch Account</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOOKOUT ADDRESS MODAL -->
+  <div id="lookout-modal" class="auth-modal" aria-hidden="true" role="dialog" tabindex="-1" style="z-index:10001;">
+    <div class="auth-card" role="document" style="max-width:420px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <strong style="font-family:'Rye'; font-size:18px; color:#3e2615;">📍 Lookout — Saved Address</strong>
+        <button id="close-lookout" class="close-x" aria-label="Close">✕</button>
+      </div>
+      <p class="muted" style="margin-bottom:12px; font-size:13px;">Save your delivery address so it fills automatically at checkout.</p>
+      <div class="field"><label>Full Address</label><textarea id="lookout-address" rows="3" style="width:100%; padding:10px; border-radius:8px; border:1.5px solid #e7dfd7; font-family:'Poppins',sans-serif; font-size:14px; resize:vertical;" placeholder="Street, building No., city…"></textarea></div>
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:10px;">
+        <button id="save-lookout" class="btn">💾 Save Address</button>
+      </div>
+      <div id="lookout-msg" class="muted" style="margin-top:8px; font-size:13px; text-align:center;"></div>
+    </div>
+  </div>
+
+  <!-- PASSWORD MODAL -->
+  <div id="password-modal" class="auth-modal" aria-hidden="true" role="dialog" tabindex="-1" style="z-index:10002;">
+    <div class="auth-card" role="document" style="max-width:340px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <strong style="font-family:'Rye'; font-size:18px; color:#3e2615;">🔑 Change Password</strong>
+        <button id="close-pass-btn" class="close-x" aria-label="Close">✕</button>
+      </div>
+      <div class="field"><label>Current Password</label><input type="password" id="pass-old" /></div>
+      <div class="field"><label>New Password</label><input type="password" id="pass-new" /></div>
+      <div class="field"><label>Confirm New Password</label><input type="password" id="pass-confirm" /></div>
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:10px;">
+        <button id="save-pass-btn" class="btn">Update Password</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT MODAL -->
+  <div id="checkout-modal" class="checkout-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="checkout-title" tabindex="-1">
+    <div class="checkout" role="document">
+      <div class="checkout-header">
+        <div class="auth-title"><strong id="checkout-title">Checkout</strong></div>
+        <button id="checkout-close" class="close-x" aria-label="Close checkout">✕</button>
+      </div>
+      <form class="checkout-body">
+        <!-- Left: Customer info -->
+        <div class="checkout-section">
+          <div class="kicker">Shipping Details</div>
+          <div class="checkout-row" style="margin-top:8px">
+            <div class="field"><label>Full Name</label><input type="text" id="co-name" placeholder="e.g., Ahmed Ali" /></div>
+            <div class="field"><label>Phone</label><input type="tel" id="co-phone" placeholder="+964 7xx xxx xxxx" /></div>
+          </div>
+          <div class="field"><label>Email (optional)</label><input type="email" id="co-email" placeholder="you@example.com" /></div>
+          <div class="field"><label>Address</label><input type="text" id="co-address" placeholder="Street, building, apt" /></div>
+          <div class="checkout-row">
+            <div class="field"><label>City</label><input type="text" id="co-city" placeholder="Baghdad" /></div>
+            <div class="field"><label>Postal Code (optional)</label><input type="text" id="co-zip" placeholder="" /></div>
+          </div>
+
+          <div class="kicker" style="margin-top:10px">Payment Method</div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px">
+            <label style="display:flex;align-items:center;gap:6px"><input type="radio" name="pay" value="cod" checked /> Cash on Delivery</label>
+            <label style="display:flex;align-items:center;gap:6px"><input type="radio" name="pay" value="card" /> Card (Mock)</label>
+          </div>
+
+          <div id="card-fields" style="display:none;margin-top:8px">
+            <div class="checkout-row">
+              <div class="field"><label>Card Number</label><input type="text" id="co-card" placeholder="4242 4242 4242 4242" inputmode="numeric" /></div>
+              <div class="field"><label>Expiry (MM/YY)</label><input type="text" id="co-exp" placeholder="12/28" /></div>
+            </div>
+            <div class="checkout-row">
+              <div class="field"><label>CVC</label><input type="text" id="co-cvc" placeholder="123" inputmode="numeric" /></div>
+              <div class="field"><label>Name on Card</label><input type="text" id="co-card-name" placeholder="Ahmed Ali" /></div>
+            </div>
+            <div class="muted">* Payment simulation only — not connected to a real gateway.</div>
+          </div>
+        </div>
+
+        <!-- Right: Order summary + Coupons -->
+        <div class="checkout-section">
+          <div class="kicker">Order Summary</div>
+
+          <div id="order-items" class="order-items" style="margin-top:8px"></div>
+
+          <!-- Coupon input -->
+          <div class="field" style="margin-top:10px">
+            <label>Coupon code (optional)</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="text"
+                     id="coupon-input"
+                     placeholder="مثال: BRONCO10"
+                     style="flex:1;padding:10px;border-radius:10px;border:1.5px solid #e7dfd7;font-weight:600" />
+              <button type="button" id="apply-coupon" class="icon-btn" style="white-space:nowrap">
+                Apply
+              </button>
+            </div>
+            <div id="coupon-message" class="muted" style="margin-top:4px;font-size:12px"></div>
+
+            <!-- تم نقل الكوبونات لللصفحة الرئيسية -->
+          </div>
+
+          <div id="totals" style="margin-top:8px">
+            <div class="total-line"><span>Subtotal</span><span id="t-sub">$0.00</span></div>
+
+            <!-- سطر الخصم بالكوبون -->
+            <div class="total-line" id="discount-row" style="display:none">
+              <span>Coupon Discount</span><span id="t-discount">-$0.00</span>
+            </div>
+
+            <!-- ✅ سطر خصم الهونر -->
+            <div class="total-line" id="honor-row" style="display:none">
+              <span>Honor 20% Off</span><span id="t-honor">-$0.00</span>
+            </div>
+
+            <div class="total-line"><span>Tax (5%)</span><span id="t-tax">$0.00</span></div>
+            <div class="total-line"><span>Shipping</span><span id="t-ship">$0.00</span></div>
+            <div class="total-line total-strong">
+              <span>Total</span><span id="t-total">$0.00</span>
+            </div>
+            <div class="muted">* Free shipping on orders ≥ $100</div>
+            <div class="muted" id="checkout-honor-hint" style="margin-top:4px;font-size:12px"></div>
+          </div>
+
+          <button type="button" id="place-order" class="pay-btn" style="margin-top:10px">Place Order</button>
+          <div id="order-result" class="muted" style="margin-top:8px"></div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Product Details MODAL (EN) ===== -->
+  <div id="details-modal" class="details-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="details-title" tabindex="-1">
+    <div class="details" role="document">
+      <div class="details-media">
+        <img id="details-img" src="" alt="Product image" />
+        <span id="details-badge" class="badge" style="position:absolute;top:12px;left:12px;display:none">SALE</span>
+        <button id="details-close" class="close-x" aria-label="Close details" style="position:absolute;top:8px;right:8px;font-size:22px;color:#5C3A21;background:#fff;border-radius:12px;border:1px solid #e7dfd7;padding:4px 8px">✕</button>
+      </div>
+      <div class="details-body">
+        <div class="kicker" id="details-category">Category</div>
+        <h3 id="details-title" style="margin:0;font-family:'Roboto Slab'">Product Title</h3>
+        <div id="details-price" style="font-weight:900;color:var(--accent);font-size:18px">$0.00</div>
+        <p id="details-desc" style="margin:6px 0 2px">Description…</p>
+        <div class="specs" id="details-specs"></div>
+        <div>
+          <div class="muted" style="margin:6px 0 4px">Available sizes</div>
+          <div class="size-row" id="details-sizes"></div>
+        </div>
+        <div class="details-actions">
+          <button id="details-add" class="btn">Add to Cart</button>
+          <button id="details-buy" class="icon-btn" style="border-color:#b8834d;color:#6e4a2d">Buy Now</button>
+          <a id="details-link" href="#" target="_blank" rel="noopener" class="icon-btn">Open product page</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer style="background:#3E2615; color:#e7dfd7; padding:40px 20px; text-align:center; font-family:'Poppins', sans-serif;">
+    <div style="font-family:'Rye'; font-size:24px; color:#E8B651; margin-bottom:10px;">BRONCO</div>
+    <div style="font-size:14px; opacity:0.8; margin-bottom:20px;">Western Wear Co. &copy; 2026. All rights reserved.</div>
+    <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap; font-size:14px;">
+      <a href="#" style="color:#e7dfd7; text-decoration:none;">Privacy Policy</a>
+      <a href="#" style="color:#e7dfd7; text-decoration:none;">Terms of Service</a>
+      <a href="../admin/index.html" id="admin-link" style="display:none; color:#E8B651; text-decoration:none; font-weight:600;">Admin Panel</a>
+    </div>
+  </footer>
+
+  
+
+  <!-- Hidden YouTube player for SFX -->
+  <div id="yt-sfx" style="position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;"></div>
+  <div id="yt-trophy-sfx" style="position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;"></div>
+  <script src="https://www.youtube.com/iframe_api"></script>
+</body>
+</html>

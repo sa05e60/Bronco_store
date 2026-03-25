@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: bronco-api
+    env: node
+    plan: free
+    region: frankfurt # or your preferred region
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASS
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: BASE_URL
+        value: "https://your-vercel-app-url.vercel.app"
+      - key: STORE_EMAIL
+        sync: false
+      - key: STORE_EMAIL_PASSWORD
+        sync: false
+      - key: STORE_EMAIL_NAME
+        value: "BRONCO Store"
+      - key: CORS_ORIGINS
+        value: "https://your-vercel-app-url.vercel.app"

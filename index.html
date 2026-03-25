@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BRONCO — Welcome</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rye&family=Roboto+Slab:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Poppins", sans-serif; background: #050505; color: #fff; overflow: hidden; }
+    
+    .hero {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    
+    .hero-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      /* Dark gradient to ensure text readability */
+      background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(20,10,5,0.8) 100%);
+      z-index: 2;
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      padding: 20px;
+      animation: fadeIn 1.5s ease-out forwards;
+    }
+    
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    .brand-logo {
+      font-family: "Rye", serif;
+      font-size: clamp(60px, 8vw, 100px);
+      margin-bottom: 5px;
+      color: #fff;
+      letter-spacing: 4px;
+      text-shadow: 0 4px 15px rgba(0,0,0,0.8);
+    }
+    
+    .tagline {
+      font-size: clamp(16px, 2vw, 22px);
+      font-weight: 300;
+      margin-bottom: 35px;
+      color: rgba(255, 255, 255, 0.9);
+      letter-spacing: 1px;
+    }
+    
+    .enter-btn {
+      display: inline-block;
+      text-decoration: none;
+      background: #C29B77;
+      color: #3b2414;
+      padding: 16px 42px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      border: 2px solid transparent;
+    }
+    
+    .enter-btn:hover {
+      background: transparent;
+      color: #C29B77;
+      border-color: #C29B77;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- شاشة "انقر للبدء" تلتف على منع المتصفحات للصوت بطريقة احترافية تشبه السينما -->
+  <div id="startup-overlay" style="position:fixed; inset:0; background:#050505; color:#C29B77; z-index:99999; display:flex; align-items:center; justify-content:center; flex-direction:column; cursor:pointer; font-family:'Rye', serif; text-align:center; transition:opacity 1s ease;">
+    <h1 style="font-size: clamp(40px, 6vw, 60px); letter-spacing: 2px;">BRONCO</h1>
+    <p style="font-family:'Poppins', sans-serif; font-size:16px; margin-top:10px; opacity:0.8; animation: pulse 1.5s infinite;">Click Anywhere to Enter</p>
+  </div>
+
+  <section class="hero">
+    <video loop playsinline class="hero-video" id="bg-video">
+      <source src="store/assets/hero-video.mp4" type="video/mp4">
+    </video>
+    
+    <div class="hero-overlay"></div>
+    
+    <div class="hero-content" style="opacity:0; transition:opacity 2s ease; animation:none;" id="hero-content-div">
+      <div class="brand-logo">BRONCO</div>
+      <div class="tagline">Ride the Style. Live the West.</div>
+
+      <a href="store/index.html" class="enter-btn">Enter Store</a>
+    </div>
+  </section>
+
+  <style>
+    @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+  </style>
+
+  <script>
+    const overlay = document.getElementById('startup-overlay');
+    const vid = document.getElementById('bg-video');
+    const heroContent = document.getElementById('hero-content-div');
+
+    overlay.addEventListener('click', function() {
+      // إخفاء شاشة البداية
+      overlay.style.opacity = '0';
+      setTimeout(() => overlay.style.display = 'none', 1000);
+      
+      // تشغيل الفيديو بالصوت الكامل بشكل مؤكد
+      if (vid) {
+        vid.muted = false;
+        vid.volume = 1.0;
+        vid.play();
+      }
+      
+      // إظهار المحتوى بتأثير بطيء مسرحي
+      if (heroContent) {
+        heroContent.style.opacity = '1';
+        heroContent.style.transform = 'translateY(0)';
+      }
+    });
+  </script>
+
+</body>
+</html>
