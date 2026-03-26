@@ -685,8 +685,9 @@ let YT_SFX_PLAYER = null;
           const srcset = makeSrcSet(imgUrl);
           const sizes  = "(max-width: 600px) 100vw, 220px";
 
-          const stockClass = p.stock > 0 ? 'in-stock' : '';
-          const stockText  = p.stock > 0 ? `In Stock (${p.stock})` : 'Out of Stock';
+          const hasStock = p.stock > 0 || typeof p.stock === 'undefined';
+          const stockClass = hasStock ? 'in-stock' : '';
+          const stockText  = hasStock ? `In Stock ${p.stock ? '('+p.stock+')' : ''}` : 'Out of Stock';
           const sizesText  = (p.details && p.details.sizes && p.details.sizes.length > 0) 
             ? p.details.sizes.join(', ') 
             : '';
@@ -708,7 +709,7 @@ let YT_SFX_PLAYER = null;
               <div class="price">${fmt((p.priceCents||0)/100)}</div>
               <div class="actions">
                 <button class="icon-btn" onclick="openDetails('${p.id}')" aria-label="View details" title="View details">Details</button>
-                  ${p.stock > 0 
+                  ${hasStock 
                      ? `<button class="icon-btn" onclick="addToCart('${p.id}');" aria-label="Add to cart" title="Add to Cart">Add to Cart</button>`
                      : `<button class="icon-btn" disabled style="background:#666; cursor:not-allowed; opacity:0.6" aria-label="Out of stock" title="Out of Stock">Sold Out</button>`
                   }

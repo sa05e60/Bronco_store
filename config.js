@@ -2,7 +2,7 @@
  * BRONCO Store — API Configuration
  * 
  * Set window.BRONCO_API_URL to your backend URL.
- * For local development:  '' (empty = same origin)
+ * For local development:  'http://localhost:3001'
  * For production (Render): 'https://your-bronco-api.onrender.com'
  */
-window.BRONCO_API_URL = 'https://bronco-api-xyz.onrender.com';
+window.BRONCO_API_URL = 'http://localhost:3001';
