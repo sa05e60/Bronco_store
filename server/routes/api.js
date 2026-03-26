@@ -3,7 +3,7 @@ const router = express.Router();
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
-const pool = require('../db');
+const sqlite = require('../sqlite_async');
 
 // ─── helpers ────────────────────────────────────────────────────────
 function ok(data = {}) { return { success: true, ...data }; }
@@ -33,13 +33,12 @@ router.all('/', async (req, res) => {
       case 'login': {
         const { email, password } = data;
         if (!email || !password) return res.json(fail('Email and password are required.'));
-        const [rows] = await pool.query('SELECT * FROM users WHERE email=?', [email]);
-        if (rows.length === 0) return res.json(fail('User not found.'));
-        const row = rows[0];
+        const row = await sqlite.getAsync('SELECT * FROM users WHERE email=?', [email]);
+        if (!row) return res.json(fail('User not found.'));
         const match = await bcrypt.compare(password, row.password);
         if (!match) return res.json(fail('Invalid password.'));
         const token = crypto.randomBytes(16).toString('hex');
-        await pool.query('UPDATE users SET auth_token=?, token_expires=DATE_ADD(NOW(), INTERVAL 30 DAY) WHERE id=?', [token, row.id]);
+        await sqlite.runAsync('UPDATE users SET auth_token=?, token_expires=datetime("now", "+30 days") WHERE id=?', [token, row.id]);
         row.auth_token = token;
         delete row.password;
         return res.json(ok({ user: row }));
@@ -50,15 +49,14 @@ router.all('/', async (req, res) => {
         if (!email || !rawPass) return res.json(fail('Email and password are required.'));
         if (rawPass.length < 6) return res.json(fail('Password must be at least 6 characters.'));
         const hash = await bcrypt.hash(rawPass, 10);
-        const [existing] = await pool.query('SELECT id FROM users WHERE email=?', [email]);
-        if (existing.length > 0) return res.json(fail('Email already exists.'));
+        const existing = await sqlite.getAsync('SELECT id FROM users WHERE email=?', [email]);
+        if (existing) return res.json(fail('Email already exists.'));
         const token = crypto.randomBytes(16).toString('hex');
-        await pool.query(
-          'INSERT INTO users (name, email, phone, password, auth_token, token_expires) VALUES (?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 30 DAY))',
+        await sqlite.runAsync(
+          'INSERT INTO users (name, email, phone, password, auth_token, token_expires) VALUES (?, ?, ?, ?, ?, datetime("now", "+30 days"))',
           [name || '', email, phone || '', hash, token]
         );
-        const [newRows] = await pool.query('SELECT * FROM users WHERE email=?', [email]);
-        const row = newRows[0];
+        const row = await sqlite.getAsync('SELECT * FROM users WHERE email=?', [email]);
         delete row.password;
         return res.json(ok({ user: row }));
       }
