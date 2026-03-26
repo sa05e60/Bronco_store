@@ -66,19 +66,19 @@ router.all('/', async (req, res) => {
         const uid = parseInt(req.query.uid, 10);
         const token = req.query.auth_token || '';
         if (!token) return res.json(fail('Unauthorized'));
-        const [auth] = await pool.query('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > NOW()', [uid, token]);
-        if (auth.length === 0) return res.json(fail('Unauthorized'));
-        const [rows] = await pool.query('SELECT id, name, email, phone, honorPoints, bounty, profilePic, address FROM users WHERE id=?', [uid]);
-        if (rows.length === 0) return res.json(fail('User not found.'));
-        return res.json(ok({ user: rows[0] }));
+        const auth = await sqlite.getAsync('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > datetime("now")', [uid, token]);
+        if (!auth) return res.json(fail('Unauthorized'));
+        const user = await sqlite.getAsync('SELECT id, name, email, phone, honorPoints, bounty, profilePic, address FROM users WHERE id=?', [uid]);
+        if (!user) return res.json(fail('User not found.'));
+        return res.json(ok({ user }));
       }
 
       case 'update_pic': {
         const uid = parseInt(data.uid, 10);
         const token = data.auth_token || '';
         if (!token) return res.json(fail('Unauthorized'));
-        const [auth] = await pool.query('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > NOW()', [uid, token]);
-        if (auth.length === 0) return res.json(fail('Unauthorized'));
+        const auth = await sqlite.getAsync('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > datetime("now")', [uid, token]);
+        if (!auth) return res.json(fail('Unauthorized'));
         const pic = data.profilePic || '';
         const sizeBytes = Math.floor(pic.length * 0.75);
         if (sizeBytes > 2000000) return res.json(fail('حجم الصورة كبير جداً. الحد الأقصى هو 2MB'));
@@ -90,7 +90,7 @@ router.all('/', async (req, res) => {
           const validHeaders = ['89504e47', 'ffd8ffe0', 'ffd8ffe1', 'ffd8ffee', '47494638', '52494646'];
           if (!validHeaders.some(h => header.startsWith(h))) return res.json(fail('Invalid image format.'));
         }
-        await pool.query('UPDATE users SET profilePic=? WHERE id=?', [pic, uid]);
+        await sqlite.runAsync('UPDATE users SET profilePic=? WHERE id=?', [pic, uid]);
         return res.json(ok());
       }
 
@@ -98,9 +98,9 @@ router.all('/', async (req, res) => {
         const uid = parseInt(data.uid, 10);
         const token = data.auth_token || '';
         if (!token) return res.json(fail('Unauthorized'));
-        const [auth] = await pool.query('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > NOW()', [uid, token]);
-        if (auth.length === 0) return res.json(fail('Unauthorized'));
-        await pool.query('UPDATE users SET name=? WHERE id=?', [data.name || '', uid]);
+        const auth = await sqlite.getAsync('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > datetime("now")', [uid, token]);
+        if (!auth) return res.json(fail('Unauthorized'));
+        await sqlite.runAsync('UPDATE users SET name=? WHERE id=?', [data.name || '', uid]);
         return res.json(ok());
       }
 
@@ -108,9 +108,9 @@ router.all('/', async (req, res) => {
         const uid = parseInt(data.uid, 10);
         const token = data.auth_token || '';
         if (!token) return res.json(fail('Unauthorized'));
-        const [auth] = await pool.query('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > NOW()', [uid, token]);
-        if (auth.length === 0) return res.json(fail('Unauthorized'));
-        await pool.query('UPDATE users SET address=? WHERE id=?', [data.address || '', uid]);
+        const auth = await sqlite.getAsync('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > datetime("now")', [uid, token]);
+        if (!auth) return res.json(fail('Unauthorized'));
+        await sqlite.runAsync('UPDATE users SET address=? WHERE id=?', [data.address || '', uid]);
         return res.json(ok());
       }
 
@@ -118,9 +118,9 @@ router.all('/', async (req, res) => {
         const uid = parseInt(data.uid, 10);
         const token = data.auth_token || '';
         if (!token) return res.json(fail('Unauthorized'));
-        const [auth] = await pool.query('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > NOW()', [uid, token]);
-        if (auth.length === 0) return res.json(fail('Unauthorized'));
-        await pool.query('UPDATE users SET phone=? WHERE id=?', [data.phone || '', uid]);
+        const auth = await sqlite.getAsync('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > datetime("now")', [uid, token]);
+        if (!auth) return res.json(fail('Unauthorized'));
+        await sqlite.runAsync('UPDATE users SET phone=? WHERE id=?', [data.phone || '', uid]);
         return res.json(ok());
       }
 
@@ -128,13 +128,12 @@ router.all('/', async (req, res) => {
         const uid = parseInt(data.uid, 10);
         const token = data.auth_token || '';
         if (!token) return res.json(fail('Unauthorized'));
-        const [rows] = await pool.query('SELECT id, password FROM users WHERE id=? AND auth_token=? AND token_expires > NOW()', [uid, token]);
-        if (rows.length === 0) return res.json(fail('Unauthorized'));
-        const row = rows[0];
+        const row = await sqlite.getAsync('SELECT id, password FROM users WHERE id=? AND auth_token=? AND token_expires > datetime("now")', [uid, token]);
+        if (!row) return res.json(fail('Unauthorized'));
         const match = await bcrypt.compare(data.old_password || '', row.password);
         if (!match) return res.json(fail('Incorrect current password.'));
         const newHash = await bcrypt.hash(data.new_password, 10);
-        await pool.query('UPDATE users SET password=? WHERE id=?', [newHash, uid]);
+        await sqlite.runAsync('UPDATE users SET password=? WHERE id=?', [newHash, uid]);
         return res.json(ok());
       }
 
@@ -142,9 +141,9 @@ router.all('/', async (req, res) => {
         const uid = parseInt(req.query.uid, 10);
         const token = req.query.auth_token || '';
         if (!token) return res.json({ success: false, orders: [] });
-        const [auth] = await pool.query('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > NOW()', [uid, token]);
-        if (auth.length === 0) return res.json({ success: false, orders: [] });
-        const [rows] = await pool.query('SELECT id, status, totals, createdAt FROM orders WHERE uid=? ORDER BY createdAt DESC LIMIT 10', [uid]);
+        const auth = await sqlite.getAsync('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > datetime("now")', [uid, token]);
+        if (!auth) return res.json({ success: false, orders: [] });
+        const rows = await sqlite.allAsync('SELECT id, status, totals, createdAt FROM orders WHERE uid=? ORDER BY createdAt DESC LIMIT 10', [uid]);
         rows.forEach(r => { try { r.totals = JSON.parse(r.totals); } catch {} });
         return res.json(ok({ orders: rows }));
       }
@@ -154,15 +153,16 @@ router.all('/', async (req, res) => {
         const page = Math.max(1, parseInt(req.query.page || '1', 10));
         const limit = 50;
         const offset = (page - 1) * limit;
-        const [[{ c: total }]] = await pool.query('SELECT COUNT(*) as c FROM products');
+        const totalRow = await sqlite.getAsync('SELECT COUNT(*) as c FROM products');
+        const total = totalRow ? totalRow.c : 0;
         const maxPages = Math.ceil(total / limit);
-        const [rows] = await pool.query('SELECT * FROM products ORDER BY createdAt DESC LIMIT ? OFFSET ?', [limit, offset]);
+        const rows = await sqlite.allAsync('SELECT * FROM products ORDER BY createdAt DESC LIMIT ? OFFSET ?', [limit, offset]);
         rows.forEach(r => { try { r.details = JSON.parse(r.details); } catch {} });
         return res.json({ success: true, products: rows, page, maxPages, total });
       }
 
       case 'get_coupons': {
-        const [rows] = await pool.query('SELECT * FROM coupons');
+        const rows = await sqlite.allAsync('SELECT * FROM coupons');
         return res.json(ok({ coupons: rows }));
       }
 
@@ -173,8 +173,8 @@ router.all('/', async (req, res) => {
 
         if (uid > 0) {
           if (!token) return res.json(fail('Unauthorized'));
-          const [auth] = await pool.query('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > NOW()', [uid, token]);
-          if (auth.length === 0) return res.json(fail('Unauthorized'));
+          const auth = await sqlite.getAsync('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > datetime("now")', [uid, token]);
+          if (!auth) return res.json(fail('Unauthorized'));
         }
 
         let subtotal = 0;
@@ -187,9 +187,8 @@ router.all('/', async (req, res) => {
           const qty = parseInt(item.qty || 1, 10);
           if (qty <= 0) continue;
 
-          const [pRows] = await pool.query('SELECT title, priceCents, img, stock FROM products WHERE id=?', [prodId]);
-          if (pRows.length === 0) continue;
-          const pRow = pRows[0];
+          const pRow = await sqlite.getAsync('SELECT title, priceCents, img, stock FROM products WHERE id=?', [prodId]);
+          if (!pRow) continue;
           if (parseInt(pRow.stock, 10) < qty) {
             return res.json(fail(`عذراً، المنتج '${pRow.title}' غير متوفر بالكمية المطلوبة.`));
           }
@@ -215,9 +214,8 @@ router.all('/', async (req, res) => {
         if (couponCode.startsWith('HONOR-') && totalQty >= 10) {
           discount = Math.round(subtotal * 0.20);
         } else if (couponCode) {
-          const [cRows] = await pool.query('SELECT type, value, minSubtotalCents FROM coupons WHERE code=?', [couponCode]);
-          if (cRows.length > 0) {
-            const c = cRows[0];
+          const c = await sqlite.getAsync('SELECT type, value, minSubtotalCents FROM coupons WHERE code=?', [couponCode]);
+          if (c) {
             if (!c.minSubtotalCents || subtotal >= parseInt(c.minSubtotalCents, 10)) {
               if (c.type === 'percent') discount = Math.round(subtotal * (parseInt(c.value, 10) / 100));
               else if (c.type === 'shipping') shipping = 0;
@@ -235,11 +233,11 @@ router.all('/', async (req, res) => {
 
         // Decrease stock
         for (const it of safeItems) {
-          await pool.query('UPDATE products SET stock = stock - ? WHERE id=?', [it.qty, it.id]);
+          await sqlite.runAsync('UPDATE products SET stock = stock - ? WHERE id=?', [it.qty, it.id]);
         }
 
         const status = data.status || 'placed';
-        await pool.query(
+        await sqlite.runAsync(
           'INSERT INTO orders (id, uid, items, totals, customer, status) VALUES (?, ?, ?, ?, ?, ?)',
           [orderId, uid, JSON.stringify(safeItems), JSON.stringify(safeTotals), JSON.stringify(data.customer), status]
         );
@@ -247,7 +245,7 @@ router.all('/', async (req, res) => {
         let addedBounty = 0;
         if (uid > 0) {
           addedBounty = safeItems.length * 500;
-          await pool.query('UPDATE users SET honorPoints = LEAST(100, honorPoints + ?), bounty = bounty + ? WHERE id=?', [honorPoints, addedBounty, uid]);
+          await sqlite.runAsync('UPDATE users SET honorPoints = MIN(100, honorPoints + ?), bounty = bounty + ? WHERE id=?', [honorPoints, addedBounty, uid]);
         }
 
         // ── Send email receipt ──
@@ -284,13 +282,12 @@ router.all('/', async (req, res) => {
       // ═══════════════════════ ADMIN AUTH ═════════════════════════
       case 'admin_login': {
         const { email, password: pass } = data;
-        const [rows] = await pool.query('SELECT * FROM users WHERE email=? AND isAdmin=1', [email]);
-        if (rows.length === 0) return res.json(fail('Access denied. Admin only.'));
-        const row = rows[0];
+        const row = await sqlite.getAsync('SELECT * FROM users WHERE email=? AND isAdmin=1', [email]);
+        if (!row) return res.json(fail('Access denied. Admin only.'));
         const match = await bcrypt.compare(pass, row.password);
         if (!match) return res.json(fail('Invalid password.'));
         const token = crypto.randomBytes(16).toString('hex');
-        await pool.query('UPDATE users SET auth_token=?, token_expires=DATE_ADD(NOW(), INTERVAL 30 DAY) WHERE id=?', [token, row.id]);
+        await sqlite.runAsync('UPDATE users SET auth_token=?, token_expires=datetime("now", "+30 days") WHERE id=?', [token, row.id]);
         row.auth_token = token;
         delete row.password;
         return res.json(ok({ user: row }));
@@ -301,19 +298,19 @@ router.all('/', async (req, res) => {
         const adminId = parseInt(data.admin_id, 10);
         const token = data.auth_token || '';
         if (!token) return res.json(fail('Unauthorized'));
-        const [auth] = await pool.query('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > NOW() AND isAdmin=1', [adminId, token]);
-        if (auth.length === 0) return res.json(fail('Unauthorized'));
+        const auth = await sqlite.getAsync('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > datetime("now") AND isAdmin=1', [adminId, token]);
+        if (!auth) return res.json(fail('Unauthorized'));
 
         const { id, title, priceCents, img, category, details, stock } = data;
         const detailsJson = JSON.stringify(details || {});
         const createdAt = data.createdAt ? data.createdAt.trim() : new Date().toISOString().slice(0, 19).replace('T', ' ');
 
-        const [existing] = await pool.query('SELECT id FROM products WHERE id=?', [id]);
-        if (existing.length > 0) {
-          await pool.query('UPDATE products SET title=?, priceCents=?, img=?, category=?, details=?, stock=? WHERE id=?',
+        const existing = await sqlite.getAsync('SELECT id FROM products WHERE id=?', [id]);
+        if (existing) {
+          await sqlite.runAsync('UPDATE products SET title=?, priceCents=?, img=?, category=?, details=?, stock=? WHERE id=?',
             [title, parseInt(priceCents, 10), img || '', category || '', detailsJson, parseInt(stock || 0, 10), id]);
         } else {
-          await pool.query('INSERT INTO products (id, title, priceCents, img, category, details, createdAt, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+          await sqlite.runAsync('INSERT INTO products (id, title, priceCents, img, category, details, createdAt, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             [id, title, parseInt(priceCents, 10), img || '', category || '', detailsJson, createdAt, parseInt(stock || 0, 10)]);
         }
         return res.json(ok());
@@ -323,9 +320,9 @@ router.all('/', async (req, res) => {
         const adminId = parseInt(data.admin_id, 10);
         const token = data.auth_token || '';
         if (!token) return res.json(fail('Unauthorized'));
-        const [auth] = await pool.query('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > NOW() AND isAdmin=1', [adminId, token]);
-        if (auth.length === 0) return res.json(fail('Unauthorized'));
-        await pool.query('DELETE FROM products WHERE id=?', [data.id || '']);
+        const auth = await sqlite.getAsync('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > datetime("now") AND isAdmin=1', [adminId, token]);
+        if (!auth) return res.json(fail('Unauthorized'));
+        await sqlite.runAsync('DELETE FROM products WHERE id=?', [data.id || '']);
         return res.json(ok());
       }
 
@@ -334,18 +331,18 @@ router.all('/', async (req, res) => {
         const adminId = parseInt(data.admin_id, 10);
         const token = data.auth_token || '';
         if (!token) return res.json(fail('Unauthorized'));
-        const [auth] = await pool.query('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > NOW() AND isAdmin=1', [adminId, token]);
-        if (auth.length === 0) return res.json(fail('Unauthorized'));
+        const auth = await sqlite.getAsync('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > datetime("now") AND isAdmin=1', [adminId, token]);
+        if (!auth) return res.json(fail('Unauthorized'));
 
         const { code, type, value, label, minSubtotalCents } = data;
         const createdAt = data.createdAt ? data.createdAt.trim() : new Date().toISOString().slice(0, 19).replace('T', ' ');
 
-        const [existing] = await pool.query('SELECT code FROM coupons WHERE code=?', [code]);
-        if (existing.length > 0) {
-          await pool.query('UPDATE coupons SET type=?, value=?, label=?, minSubtotalCents=? WHERE code=?',
+        const existing = await sqlite.getAsync('SELECT code FROM coupons WHERE code=?', [code]);
+        if (existing) {
+          await sqlite.runAsync('UPDATE coupons SET type=?, value=?, label=?, minSubtotalCents=? WHERE code=?',
             [type, parseInt(value, 10), label || '', parseInt(minSubtotalCents || 0, 10), code]);
         } else {
-          await pool.query('INSERT INTO coupons (code, type, value, label, minSubtotalCents, createdAt) VALUES (?, ?, ?, ?, ?, ?)',
+          await sqlite.runAsync('INSERT INTO coupons (code, type, value, label, minSubtotalCents, createdAt) VALUES (?, ?, ?, ?, ?, ?)',
             [code, type, parseInt(value, 10), label || '', parseInt(minSubtotalCents || 0, 10), createdAt]);
         }
         return res.json(ok());
@@ -355,9 +352,9 @@ router.all('/', async (req, res) => {
         const adminId = parseInt(data.admin_id, 10);
         const token = data.auth_token || '';
         if (!token) return res.json(fail('Unauthorized'));
-        const [auth] = await pool.query('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > NOW() AND isAdmin=1', [adminId, token]);
-        if (auth.length === 0) return res.json(fail('Unauthorized'));
-        await pool.query('DELETE FROM coupons WHERE code=?', [data.code || '']);
+        const auth = await sqlite.getAsync('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > datetime("now") AND isAdmin=1', [adminId, token]);
+        if (!auth) return res.json(fail('Unauthorized'));
+        await sqlite.runAsync('DELETE FROM coupons WHERE code=?', [data.code || '']);
         return res.json(ok());
       }
 
@@ -366,15 +363,16 @@ router.all('/', async (req, res) => {
         const adminId = parseInt(req.query.admin_id, 10);
         const token = req.query.auth_token || '';
         if (!token) return res.json(fail('Unauthorized'));
-        const [auth] = await pool.query('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > NOW() AND isAdmin=1', [adminId, token]);
-        if (auth.length === 0) return res.json(fail('Unauthorized'));
+        const auth = await sqlite.getAsync('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > datetime("now") AND isAdmin=1', [adminId, token]);
+        if (!auth) return res.json(fail('Unauthorized'));
 
         const page = Math.max(1, parseInt(req.query.page || '1', 10));
         const limit = 50;
         const offset = (page - 1) * limit;
-        const [[{ c: total }]] = await pool.query('SELECT COUNT(*) as c FROM orders');
+        const totalRow = await sqlite.getAsync('SELECT COUNT(*) as c FROM orders');
+        const total = totalRow ? totalRow.c : 0;
         const maxPages = Math.ceil(total / limit);
-        const [rows] = await pool.query('SELECT * FROM orders ORDER BY createdAt DESC LIMIT ? OFFSET ?', [limit, offset]);
+        const rows = await sqlite.allAsync('SELECT * FROM orders ORDER BY createdAt DESC LIMIT ? OFFSET ?', [limit, offset]);
         rows.forEach(r => {
           try { r.customer = JSON.parse(r.customer); } catch {}
           try { r.items = JSON.parse(r.items); } catch {}
@@ -387,18 +385,18 @@ router.all('/', async (req, res) => {
         const adminId = parseInt(data.admin_id, 10);
         const token = data.auth_token || '';
         if (!token) return res.json(fail('Unauthorized'));
-        const [auth] = await pool.query('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > NOW() AND isAdmin=1', [adminId, token]);
-        if (auth.length === 0) return res.json(fail('Unauthorized'));
+        const auth = await sqlite.getAsync('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > datetime("now") AND isAdmin=1', [adminId, token]);
+        if (!auth) return res.json(fail('Unauthorized'));
 
         const { id: orderId, status: newStatus } = data;
-        await pool.query('UPDATE orders SET status=? WHERE id=?', [newStatus, orderId]);
+        await sqlite.runAsync('UPDATE orders SET status=? WHERE id=?', [newStatus, orderId]);
 
         // Send email on shipped / delivered
         try {
           if (newStatus === 'shipped' || newStatus === 'delivered') {
-            const [oRows] = await pool.query('SELECT customer FROM orders WHERE id=?', [orderId]);
-            if (oRows.length > 0) {
-              const custData = typeof oRows[0].customer === 'string' ? JSON.parse(oRows[0].customer) : oRows[0].customer;
+            const oRow = await sqlite.getAsync('SELECT customer FROM orders WHERE id=?', [orderId]);
+            if (oRow) {
+              const custData = typeof oRow.customer === 'string' ? JSON.parse(oRow.customer) : oRow.customer;
               const custEmail = (custData?.email || '').trim();
               if (custEmail) {
                 const transporter = getMailTransporter();
@@ -439,9 +437,9 @@ router.all('/', async (req, res) => {
         const adminId = parseInt(data.admin_id, 10);
         const token = data.auth_token || '';
         if (!token) return res.json(fail('Unauthorized'));
-        const [auth] = await pool.query('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > NOW() AND isAdmin=1', [adminId, token]);
-        if (auth.length === 0) return res.json(fail('Unauthorized'));
-        await pool.query('DELETE FROM orders WHERE id=?', [data.id || '']);
+        const auth = await sqlite.getAsync('SELECT id FROM users WHERE id=? AND auth_token=? AND token_expires > datetime("now") AND isAdmin=1', [adminId, token]);
+        if (!auth) return res.json(fail('Unauthorized'));
+        await sqlite.runAsync('DELETE FROM orders WHERE id=?', [data.id || '']);
         return res.json(ok());
       }
 
@@ -450,16 +448,15 @@ router.all('/', async (req, res) => {
         const email = (data.email || '').trim();
         if (!email) return res.json(fail('Email required'));
 
-        const [rows] = await pool.query('SELECT id, name, reset_expires FROM users WHERE email=?', [email]);
-        if (rows.length > 0) {
-          const row = rows[0];
+        const row = await sqlite.getAsync('SELECT id, name, reset_expires FROM users WHERE email=?', [email]);
+        if (row) {
           // Rate-limit: if a token was issued less than 5 min ago, skip
           if (row.reset_expires && new Date(row.reset_expires).getTime() > (Date.now() + 2700 * 1000)) {
             return res.json(ok());
           }
           const resetToken = crypto.randomBytes(32).toString('hex');
           const expires = new Date(Date.now() + 3600 * 1000).toISOString().slice(0, 19).replace('T', ' ');
-          await pool.query('UPDATE users SET reset_token=?, reset_expires=? WHERE id=?', [resetToken, expires, row.id]);
+          await sqlite.runAsync('UPDATE users SET reset_token=?, reset_expires=? WHERE id=?', [resetToken, expires, row.id]);
 
           try {
             const transporter = getMailTransporter();
@@ -488,10 +485,10 @@ router.all('/', async (req, res) => {
         const resetToken = (data.token || '').trim();
         const newPass = (data.new_password || '').trim();
         if (!resetToken || newPass.length < 6) return res.json(fail('Invalid data or password too short (min 6 chars)'));
-        const [rows] = await pool.query('SELECT id FROM users WHERE reset_token=? AND reset_expires > NOW()', [resetToken]);
-        if (rows.length === 0) return res.json(fail('Invalid or expired reset token'));
+        const row = await sqlite.getAsync('SELECT id FROM users WHERE reset_token=? AND reset_expires > datetime("now")', [resetToken]);
+        if (!row) return res.json(fail('Invalid or expired reset token'));
         const hash = await bcrypt.hash(newPass, 10);
-        await pool.query('UPDATE users SET password=?, reset_token=NULL, reset_expires=NULL WHERE id=?', [hash, rows[0].id]);
+        await sqlite.runAsync('UPDATE users SET password=?, reset_token=NULL, reset_expires=NULL WHERE id=?', [hash, row.id]);
         return res.json(ok());
       }
 
@@ -501,7 +498,7 @@ router.all('/', async (req, res) => {
         const email = (data.email || '').trim();
         const message = (data.message || '').trim();
         if (!name || !email || !message) return res.json(fail('جميع الحقول مطلوبة'));
-        await pool.query('INSERT INTO messages (name, email, message) VALUES (?, ?, ?)', [name, email, message]);
+        await sqlite.runAsync('INSERT INTO messages (name, email, message) VALUES (?, ?, ?)', [name, email, message]);
         return res.json(ok({ message: 'تم إرسال رسالتك بنجاح!' }));
       }
 
