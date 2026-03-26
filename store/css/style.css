@@ -153,9 +153,140 @@
     }
     .hero-badge .social a:hover { background: rgba(255, 255, 255, 0.15); border-color: var(--tan); transform: scale(1.05); }
 
-    /* MAIN */
-    .container { max-width: 1200px; margin: 40px auto; padding: 0 24px }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px }
+    /* === REBUILT CONTAINER LAYOUT & FILTERS === */
+    .container {
+      max-width: 1250px;
+      margin: 40px auto 80px;
+      padding: 0 24px;
+      background: transparent;
+    }
+    .container h2#shop {
+      font-size: clamp(28px, 4vw, 36px);
+      color: var(--brown);
+      margin: 0 0 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px dashed rgba(194, 155, 119, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    /* Filters Container */
+    .filters {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--tan) transparent;
+      -webkit-overflow-scrolling: touch;
+    }
+    .filters::-webkit-scrollbar { height: 6px; }
+    .filters::-webkit-scrollbar-track { background: transparent; }
+    .filters::-webkit-scrollbar-thumb { background-color: var(--tan); border-radius: 20px; }
+    
+    /* Filter Button */
+    .filter-btn {
+      flex: 0 0 auto;
+      background: #f7efe5;
+      color: var(--brown-2);
+      border: 1.5px solid #e7ddce;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .filter-btn:hover {
+      background: #fff;
+      border-color: var(--tan);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(194,155,119,0.2);
+    }
+    .filter-btn[aria-pressed="true"] {
+      background: var(--brown);
+      color: #fff;
+      border-color: var(--brown);
+      box-shadow: 0 6px 16px rgba(92,58,33,0.3);
+    }
+    .filter-count { opacity: 0.7; font-size: 12px; font-weight: 800; }
+    
+    /* Toolbar (Search & Sort) */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(194, 155, 119, 0.3);
+      padding: 16px 20px;
+      border-radius: 16px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+    }
+    
+    .search {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 250px;
+      background: #fff;
+      border: 1.5px solid #e7ddce;
+      border-radius: 12px;
+      padding: 0 16px;
+      transition: all 0.3s ease;
+    }
+    .search:focus-within {
+      border-color: var(--tan);
+      box-shadow: 0 0 0 3px rgba(194, 155, 119, 0.15);
+    }
+    .search input {
+      border: none;
+      background: transparent;
+      padding: 14px 0;
+      width: 100%;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      outline: none;
+    }
+    .search input::placeholder { color: #a19588; }
+    
+    .select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: #fff url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235C3A21' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") no-repeat right 16px center;
+      background-size: 16px;
+      border: 1.5px solid #e7ddce;
+      padding: 14px 44px 14px 20px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--brown-2);
+      cursor: pointer;
+      min-width: 200px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      transition: all 0.3s ease;
+    }
+    .select:focus {
+      outline: none;
+      border-color: var(--tan);
+      box-shadow: 0 0 0 3px rgba(194, 155, 119, 0.15);
+    }
+    .select:hover { border-color: var(--tan); }
+    
+    /* Product Grid layout */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 28px }
     
     .card { 
       background: rgba(255, 255, 255, 0.8);
