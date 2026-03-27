@@ -1604,7 +1604,21 @@ let YT_SFX_PLAYER = null;
       const cardFields=document.getElementById('card-fields');
       payRadios.forEach(r=>{ r.addEventListener('change', ()=>{ cardFields.style.display=(r.value==='card'&&r.checked)?'block':'none'; }); });
 
-      document.getElementById('place-order').addEventListener('click', placeOrder);
+      // Ensure Place Order button event is always attached after DOM is loaded
+      function attachPlaceOrderListener() {
+        const btn = document.getElementById('place-order');
+        if (btn) {
+          btn.addEventListener('click', placeOrder);
+        } else {
+          // Try again after DOM update (e.g., modal open)
+          setTimeout(attachPlaceOrderListener, 300);
+        }
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', attachPlaceOrderListener);
+      } else {
+        attachPlaceOrderListener();
+      }
 
       // ===== Coupon input handlers =====
       const couponInput   = document.getElementById('coupon-input');
