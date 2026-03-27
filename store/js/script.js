@@ -1015,7 +1015,13 @@ let YT_SFX_PLAYER = null;
 
       async function placeOrder(){
         const resultEl=document.getElementById('order-result'); resultEl.textContent='';
-        const val=validateCheckout(); if(!val.ok){ resultEl.textContent=val.msg; return; }
+        const val=validateCheckout();
+        if(!val.ok){
+          resultEl.innerHTML = `<div style="color:red; text-align:center; padding:10px;">${val.msg}</div>`;
+          document.getElementById('place-order').disabled = false;
+          document.getElementById('place-order').style.pointerEvents = 'auto';
+          return;
+        }
         const {subtotal,discount,honorDiscount,tax,shipping,total}=computeTotals();
         let userTok = ''; try{ let uu = JSON.parse(localStorage.getItem('bronco_user')||'{}'); userTok = uu.auth_token||''; }catch(e){}
         const order={
