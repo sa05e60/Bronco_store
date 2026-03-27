@@ -1039,7 +1039,7 @@ let YT_SFX_PLAYER = null;
           honorOnOrder: honorPoints
         };
         try{ 
-          let req = await fetch('api/api.php?action=order', { method: 'POST', body: JSON.stringify(order) }); 
+          let req = await fetch(API_BASE_URL + '?action=order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(order) }); 
           let res = await req.json();
           let bountyEarned = res.addedBounty || 0;
 
