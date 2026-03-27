@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS products (
   img TEXT,
   category TEXT,
   details TEXT,
-  stock INTEGER DEFAULT 0
+  stock INTEGER DEFAULT 0,
+  createdAt TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS users (
