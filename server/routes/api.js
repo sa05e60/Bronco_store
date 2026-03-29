@@ -2,23 +2,21 @@ const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const sqlite = require('../sqlite_async');
 
 // ─── helpers ────────────────────────────────────────────────────────
 function ok(data = {}) { return { success: true, ...data }; }
 function fail(message) { return { success: false, message }; }
 
-function getMailTransporter() {
-  const email = process.env.STORE_EMAIL;
-  const pass = process.env.STORE_EMAIL_PASSWORD;
-  if (!email || !pass) return null;
-  return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    auth: { user: email, pass: pass.replace(/ /g, '') },
-  });
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return null;
+  return new Resend(apiKey);
+}
+
+function getFromEmail() {
+  return process.env.RESEND_FROM_EMAIL || process.env.STORE_EMAIL || 'noreply@example.com';
 }
 
 // All actions are served via GET/POST on /api?action=<name>
@@ -248,10 +246,10 @@ router.all('/', async (req, res) => {
           await sqlite.runAsync('UPDATE users SET honorPoints = MIN(100, honorPoints + ?), bounty = bounty + ? WHERE id=?', [honorPoints, addedBounty, uid]);
         }
 
-        // ── Send email receipt ──
+        // ── Send email receipt (Resend HTTP API) ──
         try {
-          const transporter = getMailTransporter();
-          if (transporter) {
+          const resend = getResendClient();
+          if (resend) {
             const custEmail = (data.customer?.email || '').trim();
             if (custEmail) {
               let itemsList = safeItems.map(it => `<li>${it.title} (الكمية: ${it.qty})</li>`).join('');
@@ -266,9 +264,9 @@ router.all('/', async (req, res) => {
                 <br><p>سنقوم بالتواصل معك قريباً لتأكيد الشحن.</p>
                 <p>مع تحيات،<br>فريق BRONCO</p>
               </div>`;
-              await transporter.sendMail({
-                from: `"${process.env.STORE_EMAIL_NAME || 'BRONCO Store'}" <${process.env.STORE_EMAIL}>`,
-                to: custEmail,
+              await resend.emails.send({
+                from: `${process.env.STORE_EMAIL_NAME || 'BRONCO Store'} <${getFromEmail()}>`,
+                to: [custEmail],
                 subject: `تأكيد طلبك من BRONCO Store (رقم الطلب: ${orderId})`,
                 html: body,
               });
@@ -391,7 +389,7 @@ router.all('/', async (req, res) => {
         const { id: orderId, status: newStatus } = data;
         await sqlite.runAsync('UPDATE orders SET status=? WHERE id=?', [newStatus, orderId]);
 
-        // Send email on shipped / delivered
+        // Send email on shipped / delivered (Resend HTTP API)
         try {
           if (newStatus === 'shipped' || newStatus === 'delivered') {
             const oRow = await sqlite.getAsync('SELECT customer FROM orders WHERE id=?', [orderId]);
@@ -399,8 +397,8 @@ router.all('/', async (req, res) => {
               const custData = typeof oRow.customer === 'string' ? JSON.parse(oRow.customer) : oRow.customer;
               const custEmail = (custData?.email || '').trim();
               if (custEmail) {
-                const transporter = getMailTransporter();
-                if (transporter) {
+                const resend = getResendClient();
+                if (resend) {
                   const custName = custData?.name || 'شريكنا';
                   let subject, body;
                   if (newStatus === 'shipped') {
@@ -420,9 +418,9 @@ router.all('/', async (req, res) => {
                       <p>شكراً لكونك جزءاً من عائلة BRONCO، وننتظر زيارتك القادمة!</p>
                       <p>مع تحيات،<br>فريق الغرب الجامح 🐎</p></div>`;
                   }
-                  await transporter.sendMail({
-                    from: `"${process.env.STORE_EMAIL_NAME || 'BRONCO Store'}" <${process.env.STORE_EMAIL}>`,
-                    to: custEmail, subject, html: body,
+                  await resend.emails.send({
+                    from: `${process.env.STORE_EMAIL_NAME || 'BRONCO Store'} <${getFromEmail()}>`,
+                    to: [custEmail], subject, html: body,
                   });
                 }
               }
@@ -459,8 +457,8 @@ router.all('/', async (req, res) => {
           await sqlite.runAsync('UPDATE users SET reset_token=?, reset_expires=? WHERE id=?', [resetToken, expires, row.id]);
 
           try {
-            const transporter = getMailTransporter();
-            if (transporter) {
+            const resend = getResendClient();
+            if (resend) {
               const resetLink = `${process.env.BASE_URL || ''}/store/reset.html?token=${resetToken}`;
               const body = `<div dir='rtl' style='font-family:Arial,sans-serif;font-size:16px;color:#333;line-height:1.6;'>
                 <h2 style='color:#5C3A21;border-bottom:2px dashed #C4A484;padding-bottom:10px;'>مرحباً ${row.name}! 🤠</h2>
@@ -470,9 +468,9 @@ router.all('/', async (req, res) => {
                   <a href='${resetLink}' style='display:inline-block;padding:12px 24px;background:#A16B43;color:#fff;text-decoration:none;border-radius:8px;font-weight:bold;letter-spacing:1px;box-shadow:0 4px 10px rgba(0,0,0,.2);'>إعادة التعيين الآن</a>
                 </div>
                 <p style='color:#666;font-size:14px;'><br>هذا الرابط صالح لمدة ساعة واحدة فقط.</p></div>`;
-              await transporter.sendMail({
-                from: `"${process.env.STORE_EMAIL_NAME || 'BRONCO Store'}" <${process.env.STORE_EMAIL}>`,
-                to: email, subject: 'إعادة تعيين كلمة المرور - BRONCO Store', html: body,
+              await resend.emails.send({
+                from: `${process.env.STORE_EMAIL_NAME || 'BRONCO Store'} <${getFromEmail()}>`,
+                to: [email], subject: 'إعادة تعيين كلمة المرور - BRONCO Store', html: body,
               });
             }
           } catch (e) { console.error('Reset Mail Error:', e.message); }

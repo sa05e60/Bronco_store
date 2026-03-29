@@ -22,9 +22,9 @@ services:
         sync: false
       - key: BASE_URL
         value: "https://your-vercel-app-url.vercel.app"
-      - key: STORE_EMAIL
+      - key: RESEND_API_KEY
         sync: false
-      - key: STORE_EMAIL_PASSWORD
+      - key: RESEND_FROM_EMAIL
         sync: false
       - key: STORE_EMAIL_NAME
         value: "BRONCO Store"
