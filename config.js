@@ -5,4 +5,4 @@
  * For local development:  'http://localhost:3001'
  * For production (Render): 'https://your-bronco-api.onrender.com'
  */
-window.BRONCO_API_URL = 'http://localhost:3001';
+window.BRONCO_API_URL = 'https://bronco-store.onrender.com';
