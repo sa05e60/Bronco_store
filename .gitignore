@@ -24,3 +24,5 @@ build/
 # Vercel and Render specific
 .vercel
 
+# SQLite database (created at runtime from schema)
+*.sqlite
