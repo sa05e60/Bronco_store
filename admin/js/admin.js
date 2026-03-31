@@ -70,7 +70,7 @@
       return;
     }
     try{
-      let r = await fetch(API_BASE + '?action=admin_login', { method:'POST', body:JSON.stringify({email, password:pass}) });
+      let r = await fetch(API_BASE + '?action=admin_login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email, password:pass}) });
       let data = await r.json();
       if (data.success) {
           localStorage.setItem('bronco_admin', JSON.stringify({email: data.user.email, id: data.user.id, auth_token: data.user.auth_token}));
@@ -163,7 +163,7 @@
     };
 
     try{
-      let r = await fetch(API_BASE + '?action=admin_save_product', { method:'POST', body:JSON.stringify(doc) });
+      let r = await fetch(API_BASE + '?action=admin_save_product', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(doc) });
       let data = await r.json();
       if(data.success){
           prodMsg.textContent = '✅ تم حفظ المنتج.';
@@ -260,7 +260,7 @@
             const id = btn.dataset.del;
             const aid = JSON.parse(localStorage.getItem('bronco_admin'))?.id;
             const tok = JSON.parse(localStorage.getItem('bronco_admin'))?.auth_token;
-            await fetch(API_BASE + '?action=admin_delete_product', { method:'POST', body:JSON.stringify({admin_id:aid, auth_token:tok, id}) });
+            await fetch(API_BASE + '?action=admin_delete_product', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({admin_id:aid, auth_token:tok, id}) });
             loadProducts(currentProdPage);
           });
         });
@@ -302,7 +302,7 @@
       createdAt: new Date().toISOString()
     };
     try{
-      let r = await fetch(API_BASE + '?action=admin_save_coupon', { method:'POST', body:JSON.stringify(doc) });
+      let r = await fetch(API_BASE + '?action=admin_save_coupon', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(doc) });
       let data = await r.json();
       if(data.success){
           cpMsg.textContent = '✅ تم حفظ الكوبون.';
@@ -370,7 +370,7 @@
             const code = btn.dataset.delcp;
             const aid = JSON.parse(localStorage.getItem('bronco_admin'))?.id;
             const tok = JSON.parse(localStorage.getItem('bronco_admin'))?.auth_token;
-            await fetch(API_BASE + '?action=admin_delete_coupon', { method:'POST', body:JSON.stringify({admin_id:aid, auth_token:tok, code}) });
+            await fetch(API_BASE + '?action=admin_delete_coupon', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({admin_id:aid, auth_token:tok, code}) });
             loadCoupons();
           });
         });
@@ -502,9 +502,9 @@
               const tok = JSON.parse(localStorage.getItem('bronco_admin'))?.auth_token;
               
               if(newStatus === 'delete') {
-                  await fetch(API_BASE + '?action=admin_delete_order', { method:'POST', body:JSON.stringify({admin_id:aid, auth_token:tok, id}) });
+                  await fetch(API_BASE + '?action=admin_delete_order', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({admin_id:aid, auth_token:tok, id}) });
               } else {
-                  await fetch(API_BASE + '?action=admin_update_order_status', { method:'POST', body:JSON.stringify({admin_id:aid, auth_token:tok, id, status:newStatus}) });
+                  await fetch(API_BASE + '?action=admin_update_order_status', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({admin_id:aid, auth_token:tok, id, status:newStatus}) });
               }
               
               loadOrders(currentOrderPage);

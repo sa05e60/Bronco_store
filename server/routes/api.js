@@ -280,8 +280,30 @@ router.all('/', async (req, res) => {
       // ═══════════════════════ ADMIN AUTH ═════════════════════════
       case 'admin_login': {
         const { email, password: pass } = data;
-        const row = await sqlite.getAsync('SELECT * FROM users WHERE email=? AND isAdmin=1', [email]);
-        if (!row) return res.json(fail('Access denied. Admin only.'));
+        if (!email || !pass) return res.json(fail('Email and password are required.'));
+
+        // Try to find admin user
+        let row = await sqlite.getAsync('SELECT * FROM users WHERE email=? AND isAdmin=1', [email]);
+
+        // Auto-create admin if DB is empty (first deploy / ephemeral filesystem)
+        if (!row && email === 'admin@bronco.com') {
+          const adminExists = await sqlite.getAsync('SELECT id FROM users WHERE isAdmin=1');
+          if (!adminExists) {
+            console.log('⚡ No admin found — creating on-the-fly for: ' + email);
+            const hash = await bcrypt.hash('Bronco2026!', 10);
+            await sqlite.runAsync(
+              'INSERT INTO users (name, email, password, isAdmin) VALUES (?, ?, ?, 1)',
+              ['Admin', 'admin@bronco.com', hash]
+            );
+            row = await sqlite.getAsync('SELECT * FROM users WHERE email=? AND isAdmin=1', [email]);
+          }
+        }
+
+        if (!row) {
+          console.log('Admin login failed — no admin row for:', email);
+          return res.json(fail('Access denied. Admin only.'));
+        }
+
         const match = await bcrypt.compare(pass, row.password);
         if (!match) return res.json(fail('Invalid password.'));
         const token = crypto.randomBytes(16).toString('hex');

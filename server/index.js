@@ -3,7 +3,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
+const bcrypt = require('bcryptjs');
 const apiRoutes = require('./routes/api');
+const sqlite = require('./sqlite_async');
 
 const app = express();
 app.set('trust proxy', 1); // Trust first proxy (Render, etc.)
@@ -17,11 +19,10 @@ const allowedOrigins = (process.env.CORS_ORIGINS || '')
 
 app.use(cors({
   origin: (origin, cb) => {
-    // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return cb(null, true);
     if (allowedOrigins.length === 0) return cb(null, true);
     if (allowedOrigins.includes(origin)) return cb(null, true);
-    return cb(null, true); // permissive for free-tier — tighten in production
+    return cb(null, true); // permissive for free-tier
   },
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
@@ -46,32 +47,36 @@ app.get('/', (_req, res) => {
   res.json({ status: 'ok', service: 'BRONCO API' });
 });
 
-// --------------- Seed admin user ---------------
-async function seedAdmin() {
-  // Wait for DB schema init to complete (it runs async via callbacks)
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  const sqlite = require('./sqlite_async');
-  const bcrypt = require('bcryptjs');
+// --------------- Boot sequence ---------------
+async function boot() {
+  // 1) Wait for DB schema + migrations to finish
+  await sqlite.ready;
+  console.log('✅ DB ready');
+
+  // 2) Seed admin if none exists
   try {
-    const row = await sqlite.getAsync('SELECT id FROM users WHERE isAdmin=1');
+    const row = await sqlite.getAsync('SELECT id, email FROM users WHERE isAdmin=1');
     if (!row) {
       const hash = await bcrypt.hash('Bronco2026!', 10);
       await sqlite.runAsync(
         'INSERT INTO users (name, email, password, isAdmin) VALUES (?, ?, ?, 1)',
         ['Admin', 'admin@bronco.com', hash]
       );
-      console.log('✅ Admin user seeded: admin@bronco.com');
+      console.log('✅ Admin seeded: admin@bronco.com');
     } else {
-      console.log('✅ Admin user already exists (id=' + row.id + ')');
+      console.log('✅ Admin exists: ' + row.email + ' (id=' + row.id + ')');
     }
   } catch (e) {
-    console.error('Seed error:', e.message);
+    console.error('❌ Seed error:', e.message);
   }
-}
 
-// --------------- Start ---------------
-seedAdmin().then(() => {
+  // 3) Start HTTP server
   app.listen(PORT, () => {
     console.log(`🤠 BRONCO API running on port ${PORT}`);
   });
+}
+
+boot().catch(err => {
+  console.error('Fatal boot error:', err);
+  process.exit(1);
 });

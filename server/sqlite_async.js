@@ -28,4 +28,7 @@ function allAsync(sql, params = []) {
   });
 }
 
-module.exports = { runAsync, getAsync, allAsync };
+// Re-export the ready promise
+const ready = db.ready;
+
+module.exports = { runAsync, getAsync, allAsync, ready };
