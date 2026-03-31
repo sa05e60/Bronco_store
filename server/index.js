@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 const apiRoutes = require('./routes/api');
 
 const app = express();
+app.set('trust proxy', 1); // Trust first proxy (Render, etc.)
 const PORT = process.env.PORT || 3001;
 
 // --------------- CORS ---------------
