@@ -66,7 +66,7 @@
     const email = loginEmail.value.trim();
     const pass  = loginPass.value;
     if(!email || !pass){
-      loginMsg.textContent = 'اكتب الإيميل والباسورد.';
+      loginMsg.textContent = 'Please enter email and password.';
       return;
     }
     try{
@@ -76,11 +76,11 @@
           localStorage.setItem('bronco_admin', JSON.stringify({email: data.user.email, id: data.user.id, auth_token: data.user.auth_token}));
           checkAuthState();
       } else {
-          loginMsg.textContent = 'فشل تسجيل الدخول: ' + data.message;
+          loginMsg.textContent = 'Login failed: ' + data.message;
       }
     }catch(e){
       console.error(e);
-      loginMsg.textContent = 'فشل الاتصال بالخادم.';
+      loginMsg.textContent = 'Connection to server failed.';
     }
   });
 
@@ -131,7 +131,7 @@
     const title = prodTitle.value.trim();
     const price = parseFloat(prodPrice.value || '0');
     if(!title || !price){
-      prodMsg.textContent = 'العنوان والسعر ضروريين.';
+      prodMsg.textContent = 'Title and price are required.';
       return;
     }
     let id = prodId.value.trim();
@@ -166,7 +166,7 @@
       let r = await fetch(API_BASE + '?action=admin_save_product', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(doc) });
       let data = await r.json();
       if(data.success){
-          prodMsg.textContent = '✅ تم حفظ المنتج.';
+          prodMsg.textContent = '✅ Product saved successfully.';
           prodId.value = id;
           loadProducts();
       } else {
@@ -174,7 +174,7 @@
       }
     }catch(e){
       console.error(e);
-      prodMsg.textContent = 'حدث خطأ أثناء الحفظ.';
+      prodMsg.textContent = 'Error saving product.';
     }
   });
 
@@ -199,7 +199,7 @@
       .then(r=>r.json())
       .then(data=>{
         if(!data.success || !data.products || data.products.length === 0){
-          productsList.textContent = 'لا يوجد منتجات بعد.';
+          productsList.textContent = 'No products found.';
           return;
         }
         const rows = [];
@@ -224,9 +224,9 @@
         // Pagination logic
         if(data.maxPages > 1) {
             rows.push('<div class="pagination-bar">');
-            if(data.page > 1) rows.push(`<button class="page-btn prod-page" data-pg="${data.page-1}">السابق</button>`);
-            rows.push(`<span class="page-info">صفحة ${data.page} من ${data.maxPages}</span>`);
-            if(data.page < data.maxPages) rows.push(`<button class="page-btn prod-page" data-pg="${data.page+1}">التالي</button>`);
+            if(data.page > 1) rows.push(`<button class="page-btn prod-page" data-pg="${data.page-1}">Previous</button>`);
+            rows.push(`<span class="page-info">Page ${data.page} of ${data.maxPages}</span>`);
+            if(data.page < data.maxPages) rows.push(`<button class="page-btn prod-page" data-pg="${data.page+1}">Next</button>`);
             rows.push('</div>');
         }
 
@@ -250,7 +250,7 @@
             prodDesc.value  = p.details?.description || '';
             prodSizes.value = (p.details?.sizes || []).join(', ');
             prodSpecs.value = specsToString(p.details?.specs || {});
-            prodMsg.textContent = 'تم تحميل المنتج في الفورم للتعديل.';
+            prodMsg.textContent = 'Product loaded for editing.';
             window.scrollTo({top:0,behavior:'smooth'});
           });
         });
@@ -266,7 +266,7 @@
         });
       }).catch(err=>{
         console.error(err);
-        productsList.textContent = 'خطأ في تحميل المنتجات.';
+        productsList.textContent = 'Error loading products.';
       });
   }
 
@@ -285,7 +285,7 @@
     cpMsg.textContent = '';
     let code = (cpCode.value || '').trim().toUpperCase();
     if(!code){
-      cpMsg.textContent = 'الكود ضروري.';
+      cpMsg.textContent = 'Coupon code is required.';
       return;
     }
     const type = cpType.value;
@@ -305,12 +305,12 @@
       let r = await fetch(API_BASE + '?action=admin_save_coupon', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(doc) });
       let data = await r.json();
       if(data.success){
-          cpMsg.textContent = '✅ تم حفظ الكوبون.';
+          cpMsg.textContent = '✅ Coupon saved successfully.';
           loadCoupons();
-      }else{ cpMsg.textContent = 'حدث خطأ أثناء حفظ الكوبون.'; }
+      }else{ cpMsg.textContent = 'Error saving coupon.'; }
     }catch(e){
       console.error(e);
-      cpMsg.textContent = 'حدث خطأ أثناء حفظ الكوبون.';
+      cpMsg.textContent = 'Error saving coupon.';
     }
   });
 
@@ -328,7 +328,7 @@
       .then(r=>r.json())
       .then(data=>{
         if(!data.success || !data.coupons || data.coupons.length === 0){
-          couponsList.textContent = 'ماكو كوبونات بعد.';
+          couponsList.textContent = 'No coupons found.';
           return;
         }
         const rows = [];
@@ -361,7 +361,7 @@
             cpValue.value = c.value || 0;
             cpMin.value   = c.minSubtotalCents ? (c.minSubtotalCents/100).toFixed(2) : '';
             cpLabel.value = c.label || '';
-            cpMsg.textContent = 'تم تحميل الكوبون للتعديل.';
+            cpMsg.textContent = 'Coupon loaded for editing.';
           });
         });
 
@@ -376,7 +376,7 @@
         });
       }).catch(err=>{
         console.error(err);
-        couponsList.textContent = 'خطأ في تحميل الكوبونات.';
+        couponsList.textContent = 'Error loading coupons.';
       });
   }
 
@@ -471,9 +471,9 @@
         const genPagination = () => {
              if(data.maxPages <= 1) return '';
              let html = '<div class="pagination-bar" style="margin-bottom:16px;">';
-             if(data.page > 1) html += `<button class="page-btn ord-page" data-pg="${data.page-1}">الصفحة السابقة</button>`;
-             html += `<span class="page-info">الصفحة ${data.page} من ${data.maxPages} (مجموع الطلبات الكلي: ${data.total})</span>`;
-             if(data.page < data.maxPages) html += `<button class="page-btn ord-page" data-pg="${data.page+1}">الصفحة التالية</button>`;
+             if(data.page > 1) html += `<button class="page-btn ord-page" data-pg="${data.page-1}">Previous</button>`;
+             html += `<span class="page-info">Page ${data.page} of ${data.maxPages} (Total orders: ${data.total})</span>`;
+             if(data.page < data.maxPages) html += `<button class="page-btn ord-page" data-pg="${data.page+1}">Next</button>`;
              html += '</div>';
              return html;
         };
@@ -513,7 +513,7 @@
         });
       }).catch(err=>{
         console.error(err);
-        if (newOrdersList) newOrdersList.textContent = 'خطأ في التحميل.';
+        if (newOrdersList) newOrdersList.textContent = 'Error loading orders.';
       });
   }
 
