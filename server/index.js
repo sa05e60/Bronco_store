@@ -48,16 +48,24 @@ app.get('/', (_req, res) => {
 
 // --------------- Seed admin user ---------------
 async function seedAdmin() {
+  // Wait for DB schema init to complete (it runs async via callbacks)
+  await new Promise(resolve => setTimeout(resolve, 1500));
   const sqlite = require('./sqlite_async');
   const bcrypt = require('bcryptjs');
-  const row = await sqlite.getAsync('SELECT id FROM users WHERE isAdmin=1');
-  if (!row) {
-    const hash = await bcrypt.hash('Bronco2026!', 10);
-    await sqlite.runAsync(
-      'INSERT INTO users (name, email, password, isAdmin) VALUES (?, ?, ?, 1)',
-      ['Admin', 'admin@bronco.com', hash]
-    );
-    console.log('✅ Admin user seeded: admin@bronco.com / Bronco2026!');
+  try {
+    const row = await sqlite.getAsync('SELECT id FROM users WHERE isAdmin=1');
+    if (!row) {
+      const hash = await bcrypt.hash('Bronco2026!', 10);
+      await sqlite.runAsync(
+        'INSERT INTO users (name, email, password, isAdmin) VALUES (?, ?, ?, 1)',
+        ['Admin', 'admin@bronco.com', hash]
+      );
+      console.log('✅ Admin user seeded: admin@bronco.com');
+    } else {
+      console.log('✅ Admin user already exists (id=' + row.id + ')');
+    }
+  } catch (e) {
+    console.error('Seed error:', e.message);
   }
 }
 

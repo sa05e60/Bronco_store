@@ -33,10 +33,24 @@ CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT,
   email TEXT UNIQUE,
+  phone TEXT,
   password TEXT,
   honorPoints INTEGER DEFAULT 0,
   bounty INTEGER DEFAULT 0,
   profilePic TEXT,
+  address TEXT,
+  auth_token TEXT,
+  token_expires TEXT,
+  reset_token TEXT,
+  reset_expires TEXT,
   createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
   isAdmin INTEGER DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT,
+  email TEXT,
+  message TEXT,
+  createdAt TEXT DEFAULT CURRENT_TIMESTAMP
 );
